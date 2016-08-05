@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.bundle.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="chargeback.js" > </script>
+	
+<title>PWS</title>
+</head>
+<body>
+
+	<table>
+		<tr>
+			<th colspan="2">
+				<h2>Memory Consumption:</h2>
+			</th>
+			<th colspan="2">
+				<h2>CPU Consumption:</h2>
+			</th>
+
+		</tr>
+		<tr>
+			<th>Unutilised Memory</th>
+			<th>Utilised Memory</th>
+			<th>Unutilised CPU</th>
+			<th>Utilised CPU</th>
+		</tr>
+		<tr>
+			<td>
+				<canvas id="memory" width="200px" height="400px" ></canvas>
+			</td>
+
+		</tr>
+	</table>
+<script type="text/javascript">
+
+getMemoryUsageDetails();
+</script>
+</body>
+</html>
