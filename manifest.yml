@@ -1,0 +1,6 @@
+---
+applications:
+- name: chargebackMicro
+  memory: 512M
+  random-route: true
+path: target/chargeback-0.0.1-SNAPSHOT.jar

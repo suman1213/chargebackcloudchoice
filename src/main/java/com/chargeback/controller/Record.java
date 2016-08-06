@@ -7,6 +7,17 @@ public class Record {
 	private String name;
 	
 	private Usage usage;
+	
+	private String memQuota;
+	
+
+		public String getMemQuota() {
+		return memQuota;
+	}
+
+	public void setMemQuota(String memQuota) {
+		this.memQuota = memQuota;
+	}
 
 		public String getName() {
 		return name;

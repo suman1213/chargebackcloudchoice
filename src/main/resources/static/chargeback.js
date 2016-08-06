@@ -64,16 +64,27 @@ var getMemoryUsageDetails = function(){
 	 $.ajax({
 		    url:"getDetails",  
 		    success:function(data) {
-		      populateChartDetails(data); 
+		      populateChartDetails(data, "memory"); 
 		    }
 		  });
  
 }
 
-/* Utility function to create a String Array*/
-var labelsArray = [];
-var getlabelsArray = function(labeList){
+/*Getting Unused Memory Details*/
+var getUnusedDetails = function(){
 	
+	 $.ajax({
+		    url:"getUnusedDetails",  
+		    success:function(data) {
+		      populateChartDetails(data, "unusedMemory"); 
+		    }
+		  });
+
+}
+/* Utility function to create a String Array*/
+
+var getlabelsArray = function(labeList){
+	var labelsArray = [];
 	for (var i=0; i < labeList.length; i++) {
 		labelsArray.push(labeList[i]);
 	}
@@ -82,9 +93,9 @@ var getlabelsArray = function(labeList){
 
 
 /* Utility Function to create an Integer Array*/
-var dataArray = [];
+
 var getdataArray = function(data){
-	
+	var dataArray = [];	
 	for (var i=0; i < data.length; i++) {
 		dataArray.push(parseInt(data[i]));
 	}
@@ -93,10 +104,9 @@ var getdataArray = function(data){
 
 
 /* Function to populate chart Details */
-var populateChartDetails = function(data){
-	 var ctx = document.getElementById("memory");
+var populateChartDetails = function(data, id){
+	 var ctx = document.getElementById(id);
 	 var colorArray = getcolorArray(data.label);
-	 alert(data);
 	 var chartData =  {
      	    labels: getlabelsArray(data.label),
          	    datasets: [
@@ -113,7 +123,5 @@ var populateChartDetails = function(data){
 		        responsive: false
 		    }
      });
-	 
-	
 	 
 }

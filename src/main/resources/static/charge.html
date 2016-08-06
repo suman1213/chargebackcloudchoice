@@ -10,7 +10,7 @@
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	
 	<script type="text/javascript" src="chargeback.js" > </script>
-	
+<script	src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js" ></script>
 <title>PWS</title>
 </head>
 <body>
@@ -26,8 +26,8 @@
 
 		</tr>
 		<tr>
-			<th>Unutilised Memory</th>
 			<th>Utilised Memory</th>
+			<th>Unutilised Memory</th>
 			<th>Unutilised CPU</th>
 			<th>Utilised CPU</th>
 		</tr>
@@ -35,12 +35,17 @@
 			<td>
 				<canvas id="memory" width="200px" height="400px" ></canvas>
 			</td>
-
+		<td>
+			
+ 			<canvas id="unusedMemory" width="200px" height="400px"></canvas>
+ 		</td>
+ 			
 		</tr>
 	</table>
 <script type="text/javascript">
 
 getMemoryUsageDetails();
+getUnusedDetails();
 </script>
 </body>
 </html>

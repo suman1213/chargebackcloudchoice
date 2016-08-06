@@ -22,6 +22,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+
+		<snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
+
 	</properties>
 
 	<dependencies>
@@ -36,7 +39,7 @@
 			<version>1.1.3</version>
 		</dependency>
 
-	<dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
@@ -48,6 +51,7 @@
 			<scope>test</scope>
 		</dependency>
 
+		
 	</dependencies>
 
 	<build>
@@ -56,6 +60,9 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
+
+
 		</plugins>
 	</build>
 
