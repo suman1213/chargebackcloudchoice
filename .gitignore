@@ -8,5 +8,6 @@
 build/
 /.mvn/
 /.git/
+/bin/
 .project
 .springBeans
