@@ -3,6 +3,7 @@
 .factorypath
 .classpath
 .settings
+.project
 /.settings/
 build/
 /.mvn/
