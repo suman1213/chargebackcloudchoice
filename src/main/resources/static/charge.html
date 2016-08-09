@@ -28,8 +28,8 @@
 		<tr>
 			<th>Utilised Memory</th>
 			<th>Unutilised Memory</th>
-			<th>Unutilised CPU</th>
 			<th>Utilised CPU</th>
+			<th>Free CPU</th>
 		</tr>
 		<tr>
 			<td>
@@ -39,6 +39,12 @@
 
 				<canvas id="unusedMemory" width="200px" height="400px"></canvas>
 			</td>
+			<td>
+				<canvas id="cpu" width="200px" height="400px"></canvas>
+			</td>
+			<td>
+				<canvas id="freeCPU" width="200px" height="400px"></canvas>
+			</td>
 
 		</tr>
 	</table>
@@ -46,6 +52,8 @@
 
 getMemoryUsageDetails();
 getUnusedDetails();
+getCPUUsageDetails();
+getFreeCPUUsageDetails();
 </script>
 </body>
 </html>

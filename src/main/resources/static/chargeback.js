@@ -45,6 +45,31 @@ var getUnusedDetails = function() {
 	});
 
 }
+var getCPUUsageDetails = function() {
+
+	$.ajax({
+		url : "getCPUUsage",
+		success : function(data) {
+			populateChartDetails(data, "cpu");
+		}
+	});
+
+}
+
+var getFreeCPUUsageDetails = function() {
+
+	$.ajax({
+		url : "getFreeCPUDetails",
+		success : function(data) {
+			populateChartDetails(data, "freeCPU");
+		}
+	});
+
+}
+/* Getting CPU Usage*/
+
+
+
 /* Utility function to create a String Array*/
 
 var getlabelsArray = function(labeList) {
@@ -60,7 +85,7 @@ var getlabelsArray = function(labeList) {
 var getdataArray = function(data) {
 	var dataArray = [];
 	for (var i = 0; i < data.length; i++) {
-		dataArray.push(parseInt(data[i]));
+		dataArray.push(parseFloat(data[i]));
 	}
 	return dataArray;
 };
@@ -82,7 +107,7 @@ var populateChartDetails = function(data, id) {
 	var midX = canvasId.width / 2;
 	var midY = canvasId.height / 2;
 	var totalValue = getTotalValue(data.data);
-
+console.log(chartData);
 	var pieChart = new Chart(canvasId, {
 		type : 'pie',
 		data : chartData,

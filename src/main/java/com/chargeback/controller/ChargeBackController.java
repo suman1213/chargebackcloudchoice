@@ -1,6 +1,7 @@
 package com.chargeback.controller;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class ChargeBackController {
 
 	// TODO :: Need to fetch this from Eureka Server Client Id by just giving application name 
 	private static final String METRICS_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getmetrics";
-	private static final String FREEMEM_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getFreeMematOrg";
+	private static final String FREERESOURRCE_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getFreeResource";
 	
 	@Autowired private RestTemplate restTemplate; 
 
@@ -44,7 +45,10 @@ public class ChargeBackController {
 			final ResponseEntity<List<Stats>> response = restTemplate.exchange(METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<List<Stats>>() {
 				});
-			return getMemoryUsageDetails(response);
+			
+			Function<ResponseEntity<List<Stats>>, List<String>> memUsedLambda = memused ->response.getBody().stream().map(stat -> stat.getRecords()).flatMap(records-> records.stream()).collect(Collectors.toList())
+					.stream().map(record -> record.getUsage().getMem()).collect(Collectors.toList());
+			return getUsageDetails(response,memUsedLambda);
 	}
 
 	/**
@@ -62,10 +66,54 @@ public class ChargeBackController {
 		final ResponseEntity<List<Stats>> response = restTemplate.exchange(METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
 		new ParameterizedTypeReference<List<Stats>>() {
 		});
-		final ResponseEntity<Long> frememResponse = restTemplate.exchange(FREEMEM_URL, HttpMethod.GET, HttpEntity.EMPTY,
-				new ParameterizedTypeReference<Long>() {
+		final ResponseEntity<String> frememResponse = restTemplate.exchange(FREERESOURRCE_URL + "/MEM", HttpMethod.GET, HttpEntity.EMPTY,
+				new ParameterizedTypeReference<String>() {
 				});
-		return getUnUtilizedMemoryDetails(response, frememResponse);
+		
+		Function<ResponseEntity<List<Stats>>, List<String>> unUsedMemoryLambda = unUsedMem -> response.getBody().stream().map(e -> e.getRecords()).flatMap(record  -> record.stream())
+		.map(r-> Long.valueOf(r.getMemQuota()) -Long.valueOf(r.getUsage().getMem())).map(e -> String.valueOf(e)).collect(Collectors.toList());
+		return getUnUtilizedResourceDetails(response, frememResponse, unUsedMemoryLambda);
+	}
+	
+	
+	@RequestMapping(value="/getCPUUsage", produces={MediaType.APPLICATION_JSON_VALUE}, method=RequestMethod.GET)
+	public ChartVO getCPUUsage(){
+	
+		final ResponseEntity<List<Stats>> response = restTemplate.exchange(METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
+		new ParameterizedTypeReference<List<Stats>>() {
+		});
+		
+		Function<ResponseEntity<List<Stats>>, List<String>> cpuUsedLambda = cpuUsed ->response.getBody().stream().map(stat -> stat.getRecords()).flatMap(records-> records.stream()).collect(Collectors.toList())
+				.stream().map(record -> record.getUsage().getCpu()).collect(Collectors.toList());
+		return getUsageDetails(response,cpuUsedLambda);
+	}
+	
+	@RequestMapping(value="/getFreeCPUDetails", produces={MediaType.APPLICATION_JSON_VALUE}, method=RequestMethod.GET)
+	public ChartVO getUnUsedCPUDetails(){
+	
+		final ResponseEntity<List<Stats>> response = restTemplate.exchange(METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
+		new ParameterizedTypeReference<List<Stats>>() {
+		});
+		final ResponseEntity<String> freeCPUResponse = restTemplate.exchange(FREERESOURRCE_URL + "/CPU", HttpMethod.GET, HttpEntity.EMPTY,
+				new ParameterizedTypeReference<String>() {
+				});
+		Function<ResponseEntity<List<Stats>>, List<String>> freeCPULambda = freeCPU -> response.getBody().stream().map(e -> e.getRecords()).flatMap(record  -> record.stream())
+				.map(r-> r.getUsage().getCpu()).collect(Collectors.toList());
+
+		return getUnUtilizedResourceDetails(response, freeCPUResponse, freeCPULambda);
+		}
+	
+	
+	@RequestMapping(value="/getDiskUsage", produces={MediaType.APPLICATION_JSON_VALUE}, method=RequestMethod.GET)
+	public ChartVO getDiskUsage(){
+	
+		final ResponseEntity<List<Stats>> response = restTemplate.exchange(METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
+		new ParameterizedTypeReference<List<Stats>>() {
+		});
+		
+		Function<ResponseEntity<List<Stats>>, List<String>> diskUsageLambda = diskUsed ->response.getBody().stream().map(stat -> stat.getRecords()).flatMap(records-> records.stream()).collect(Collectors.toList())
+				.stream().map(record -> record.getUsage().getCpu()).collect(Collectors.toList());
+		return getUsageDetails(response,diskUsageLambda);
 	}
 
 	/**
@@ -74,37 +122,33 @@ public class ChargeBackController {
 	 * @param frememResponse
 	 * @return
 	 */
-	private ChartVO getUnUtilizedMemoryDetails(final ResponseEntity<List<Stats>> response, final ResponseEntity<Long> frememResponse) {
-		final List<String> memFree = response.getBody().stream().map(e -> e.getRecords()).flatMap(record  -> record.stream())
-		.map(r-> Long.valueOf(r.getMemQuota()) -Long.valueOf(r.getUsage().getMem())).map(e -> String.valueOf(e)).collect(Collectors.toList());
+	private ChartVO getUnUtilizedResourceDetails(final ResponseEntity<List<Stats>> response, final ResponseEntity<String> freeResourceResponse, Function<ResponseEntity<List<Stats>>, List<String>> function) {
+		final List<String> freeResource = function.apply(response);
 		final List<String> appLabel = response.getBody().stream().map(o -> o.getRecords()).flatMap(l -> l.stream()).collect(Collectors.toList())
 				.stream().map(r -> r.getName()).collect(Collectors.toList());
-		final String freememAtOrg = String.valueOf(frememResponse.getBody());
-		memFree.add(freememAtOrg);
+		freeResource.add(freeResourceResponse.getBody());
 		appLabel.add("Unutilised");
 		ChartVO chartVO = new ChartVO();
-		chartVO.setData(memFree);
+		chartVO.setData(freeResource);
 		chartVO.setLabel(appLabel);
 		return chartVO;
 	}
 	
 	/**
-	 * This Method calculates the Utilized Memory from the data received from
+	 * This Method calculates the Utilized Resource from the data received from
 	 * metrics Service
 	 * 
 	 * @param response
 	 * @return Returns the details in ChartVO
 	 */
-	private ChartVO getMemoryUsageDetails(final ResponseEntity<List<Stats>> response){
+private ChartVO getUsageDetails(final ResponseEntity<List<Stats>> response, Function<ResponseEntity<List<Stats>>, List<String>> function){
 		
-		final List<String> memUsed = response.getBody().stream().map(o -> o.getRecords()).flatMap(l -> l.stream()).collect(Collectors.toList())
-				.stream().map(r -> r.getUsage().getMem()).collect(Collectors.toList());	
-		
+		final List<String> cpuUsed = function.apply(response);
 		final List<String> appLabel = response.getBody().stream().map(o -> o.getRecords()).flatMap(l -> l.stream()).collect(Collectors.toList())
 					.stream().map(r -> r.getName()).collect(Collectors.toList());
 		
 		final ChartVO chartVO = new ChartVO();
-		chartVO.setData(memUsed);
+		chartVO.setData(cpuUsed);
 		chartVO.setLabel(appLabel);
 		return chartVO;
 	}
