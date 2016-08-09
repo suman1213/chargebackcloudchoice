@@ -1,4 +1,4 @@
-package com.chargeback.controller;
+package com.chargeback.vo;
 
 public class Usage{
 
