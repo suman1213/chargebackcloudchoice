@@ -27,8 +27,8 @@ import com.chargeback.vo.Stats;
 public class ChargeBackController {
 
 	// TODO :: Need to fetch this from Eureka Server Client Id by just giving application name 
-	public static final String METRICS_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getmetrics";
-	public static final String FREEMEM_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getFreeMematOrg";
+	private static final String METRICS_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getmetrics";
+	private static final String FREEMEM_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getFreeMematOrg";
 	
 	@Autowired private RestTemplate restTemplate; 
 
@@ -36,7 +36,7 @@ public class ChargeBackController {
 	 * This Method gives the Memory usage Details of the Application. Usage is
 	 * from the Memory Quota allocated to each application
 	 * 
-	 * @return Returns the ChartVO in json formatwith label as list and and data
+	 * @return Returns the ChartVO in json format with label as list and and data
 	 *         as list
 	 */
 	@RequestMapping(value = "/getDetails", produces = { MediaType.APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
