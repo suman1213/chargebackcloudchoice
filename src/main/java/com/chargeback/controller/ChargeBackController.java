@@ -16,14 +16,14 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 public class ChargeBackController {
 
-	
-
+	public static final String METRICS_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getmetrics";
+	public static final String FREEMEM_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getFreeMematOrg";
 	@RequestMapping(value = "/getDetails", produces = { MediaType.APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
 	public ChartVO getMemUsageDetails() {
 
-		final String uri = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getmetrics";
+	
 		RestTemplate restTemplate = new RestTemplate();
-				ResponseEntity<List<Stats>> response = restTemplate.exchange(uri, HttpMethod.GET, HttpEntity.EMPTY,
+				ResponseEntity<List<Stats>> response = restTemplate.exchange(METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<List<Stats>>() {
 				});
 			return getMemoryUsageDetails(response);
@@ -33,22 +33,30 @@ public class ChargeBackController {
 
 	@RequestMapping(value="/getUnusedDetails", produces={MediaType.APPLICATION_JSON_VALUE}, method=RequestMethod.GET)
 	public ChartVO getUnutilizedMemoryDetails(){
-		final String uri = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getmetrics";
+		
 
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<List<Stats>> response = restTemplate.exchange(uri, HttpMethod.GET, HttpEntity.EMPTY,
+		ResponseEntity<List<Stats>> response = restTemplate.exchange(METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
 		new ParameterizedTypeReference<List<Stats>>() {
 		});
 		
-		return getUnUtilizedMemoryDetails(response);
+		
+		ResponseEntity<Long> frememResponse = restTemplate.exchange(FREEMEM_URL, HttpMethod.GET, HttpEntity.EMPTY,
+				new ParameterizedTypeReference<Long>() {
+				});
+		
+		return getUnUtilizedMemoryDetails(response, frememResponse);
 		
 	}
 
-	private ChartVO getUnUtilizedMemoryDetails(ResponseEntity<List<Stats>> response) {
+	private ChartVO getUnUtilizedMemoryDetails(final ResponseEntity<List<Stats>> response, final ResponseEntity<Long> frememResponse) {
 		final List<String> memFree = response.getBody().stream().map(e -> e.getRecords()).flatMap(record  -> record.stream())
 		.map(r-> Long.valueOf(r.getMemQuota()) -Long.valueOf(r.getUsage().getMem())).map(e -> String.valueOf(e)).collect(Collectors.toList());
 		final List<String> appLabel = response.getBody().stream().map(o -> o.getRecords()).flatMap(l -> l.stream()).collect(Collectors.toList())
 				.stream().map(r -> r.getName()).collect(Collectors.toList());
+		String freememAtOrg = String.valueOf(frememResponse.getBody());
+		memFree.add(freememAtOrg);
+		appLabel.add("Unutilised");
 		ChartVO chartVO = new ChartVO();
 		chartVO.setData(memFree);
 		chartVO.setLabel(appLabel);
