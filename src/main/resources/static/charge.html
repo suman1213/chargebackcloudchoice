@@ -23,6 +23,9 @@
 			<th colspan="2">
 				<h2>CPU Consumption:</h2>
 			</th>
+			<th colspan="2">
+				<h2>Disk Consumption:</h2>
+			</th>
 
 		</tr>
 		<tr>
@@ -30,6 +33,7 @@
 			<th>Unutilised Memory</th>
 			<th>Utilised CPU</th>
 			<th>Free CPU</th>
+			<th>Utilised Disk</th>
 		</tr>
 		<tr>
 			<td>
@@ -45,6 +49,9 @@
 			<td>
 				<canvas id="freeCPU" width="200px" height="400px"></canvas>
 			</td>
+			<td>
+				<canvas id="disk" width="200px" height="400px"></canvas>
+			</td>
 
 		</tr>
 	</table>
@@ -54,6 +61,7 @@ getMemoryUsageDetails();
 getUnusedDetails();
 getCPUUsageDetails();
 getFreeCPUUsageDetails();
+getDiskUsageDetails();
 </script>
 </body>
 </html>
