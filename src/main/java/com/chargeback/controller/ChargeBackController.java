@@ -31,6 +31,7 @@ public class ChargeBackController {
 	private static final String METRICS_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getmetrics";
 	private static final String FREERESOURRCE_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getFreeResource";
 	
+	
 	@Autowired private RestTemplate restTemplate; 
 
 	/**
@@ -75,7 +76,13 @@ public class ChargeBackController {
 		return getUnUtilizedResourceDetails(response, frememResponse, unUsedMemoryLambda);
 	}
 	
-	
+	/**
+	 * This Method gives the CPU usage Details of the Application. Usage is
+	 * from the CPU allocated to each application
+	 * 
+	 * @return Returns the ChartVO in JSON format with label as list and and data
+	 *         as list
+	 */
 	@RequestMapping(value="/getCPUUsage", produces={MediaType.APPLICATION_JSON_VALUE}, method=RequestMethod.GET)
 	public ChartVO getCPUUsage(){
 	
@@ -88,6 +95,13 @@ public class ChargeBackController {
 		return getUsageDetails(response,cpuUsedLambda);
 	}
 	
+	/**
+	 * This Method gives the free CPU of each Application as well as total
+	 * Free CPU at the Org Level Free cpu for each application is
+	 * calculated by subtracting the usage from the quota assigned. 
+	 * 
+	 * @return Returns the ChartVO in json format with label as list and and data as list
+	 */
 	@RequestMapping(value="/getFreeCPUDetails", produces={MediaType.APPLICATION_JSON_VALUE}, method=RequestMethod.GET)
 	public ChartVO getUnUsedCPUDetails(){
 	
@@ -103,7 +117,13 @@ public class ChargeBackController {
 		return getUnUtilizedResourceDetails(response, freeCPUResponse, freeCPULambda);
 		}
 	
-	
+	/**
+	 * This Method gives the DISK usage Details of the Application. Usage is
+	 * from the DISK allocated to each application
+	 * 
+	 * @return Returns the ChartVO in JSON format with label as list and and data
+	 *         as list
+	 */
 	@RequestMapping(value="/getDiskUsage", produces={MediaType.APPLICATION_JSON_VALUE}, method=RequestMethod.GET)
 	public ChartVO getDiskUsage(){
 	
