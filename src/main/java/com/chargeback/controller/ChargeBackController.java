@@ -72,7 +72,7 @@ public class ChargeBackController {
 				});
 		
 		Function<ResponseEntity<List<Stats>>, List<String>> unUsedMemoryLambda = unUsedMem -> response.getBody().stream().map(e -> e.getRecords()).flatMap(record  -> record.stream())
-		.map(r-> Long.valueOf(r.getMemQuota()) -Long.valueOf(r.getUsage().getMem())).map(e -> String.valueOf(e)).collect(Collectors.toList());
+		.map(r-> Long.valueOf(r.getUsage().getMem())).map(e -> String.valueOf(e)).collect(Collectors.toList());
 		return getUnUtilizedResourceDetails(response, frememResponse, unUsedMemoryLambda);
 	}
 	
@@ -163,12 +163,12 @@ public class ChargeBackController {
 	 */
 private ChartVO getUsageDetails(final ResponseEntity<List<Stats>> response, Function<ResponseEntity<List<Stats>>, List<String>> function){
 		
-		final List<String> cpuUsed = function.apply(response);
+		final List<String> resourceUsed = function.apply(response);
 		final List<String> appLabel = response.getBody().stream().map(o -> o.getRecords()).flatMap(l -> l.stream()).collect(Collectors.toList())
 					.stream().map(r -> r.getName()).collect(Collectors.toList());
 		
 		final ChartVO chartVO = new ChartVO();
-		chartVO.setData(cpuUsed);
+		chartVO.setData(resourceUsed);
 		chartVO.setLabel(appLabel);
 		return chartVO;
 	}

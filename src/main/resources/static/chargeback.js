@@ -9,6 +9,10 @@ var colors = [
 		"#ff00ff", "#800000", "#000080", "#808000", "#ffa500", "#ffc0cb",
 		"#800080", "#800080", "#ff0000", "#c0c0c0", "#ffffff", "#ffff00" ];
 
+var memoryConv=["B","KB","MB","GB","TB" ];
+var memoryFig=[1024,1048576];
+
+
 var getcolorArray = function(labeList) {
 	var ids = [];
 	var colorArray = [];
@@ -68,6 +72,17 @@ var getFreeCPUUsageDetails = function() {
 }
 /* Getting CPU Usage*/
 
+/* Getting Disk Usage*/
+var getDiskUsageDetails = function() {
+	$.ajax({
+		url : "getDiskUsage",
+		success : function(data) {
+			populateChartDetails(data, "disk");
+		}
+	});
+
+}
+
 
 
 /* Utility function to create a String Array*/
@@ -108,6 +123,7 @@ var populateChartDetails = function(data, id) {
 	var midY = canvasId.height / 2;
 	var totalValue = getTotalValue(data.data);
 console.log(chartData);
+
 	var pieChart = new Chart(canvasId, {
 		type : 'pie',
 		data : chartData,
@@ -123,6 +139,17 @@ console.log(chartData);
 							return previousValue + currentValue;
 						});
 						var currentValue = dataset.data[tooltipItem.index];
+						//var returnElement;
+						/*if(!id.toUpperCase().includes("CPU")){
+							if(currentValue<1024){
+								return (currentValue + memoryConv[0]);
+							} else if(currentValue>=1024 && currentValue<  memoryConv[1] ){
+								return (currentValue + memoryConv[0]);
+							}
+						}else{
+							var precentage = Math.floor(((currentValue / total) * 100) + 0.5);
+							return precentage + "%";
+						}*/
 						var precentage = Math
 								.floor(((currentValue / total) * 100) + 0.5);
 						return precentage + "%";
