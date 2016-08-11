@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,15 @@ public class ChargeBackController {
 	
 	
 	@Autowired private RestTemplate restTemplate; 
+	
+	@RequestMapping(value = "/getOrganizations", produces = { MediaType.APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
+	public HttpStatus getOrganizations() {
+		final ResponseEntity<List<Stats>> response = restTemplate.exchange("http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getmetrics", HttpMethod.GET, HttpEntity.EMPTY,
+				new ParameterizedTypeReference<List<Stats>>() {
+				});
+		return response.getStatusCode();
+			
+	}
 
 	/**
 	 * This Method gives the Memory usage Details of the Application. Usage is

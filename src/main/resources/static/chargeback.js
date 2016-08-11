@@ -13,6 +13,9 @@ var memoryConv=["B","KB","MB","GB","TB" ];
 var memoryFig=[1024,1048576];
 
 
+/* Created temporary array for organization which is hard cored once data is server side code is ready to fetch data from metrics this line should be deleted.*/
+var tempOrgArray=["CapGem", "Coke","Nex"];
+var tempSpaceArray=["dev", "QA","Prod"];
 var getcolorArray = function(labeList) {
 	var ids = [];
 	var colorArray = [];
@@ -83,6 +86,40 @@ var getDiskUsageDetails = function() {
 
 }
 
+var getOrganizations = function() {
+	$.ajax({
+		url : "getOrganizations",
+		success : function(data) {
+			alert("tempOrgArray : " + tempOrgArray);
+			getDropDownList("OrgSelect",tempOrgArray)
+			//populateSpaces(data, "space");
+		},
+		/*error: function (request, status, error) {
+	       
+			getDropDownList("OrgSelect",tempOrgArray)
+	    }*/
+		
+	});
+
+}
+
+var getSpace = function() {
+	$.ajax({
+		url : "getSpace",
+		success : function(data) {
+			alert("tempSpaceArray : " + tempSpaceArray);
+			getDropDownList("OrgSpace",tempOrgArray);
+			//populateSpaces(data, "space");
+		},
+		/*error: function (request, status, error) {
+	       
+			getDropDownList("OrgSelect",tempOrgArray)
+	    }*/
+		
+	});
+
+}
+
 
 
 /* Utility function to create a String Array*/
@@ -130,7 +167,7 @@ console.log(chartData);
 		options : {
 			responsive : false,
 			//onAnimationProgress:  drawSegmentValues,
-			tooltips : {
+				tooltips : {
 				callbacks : {
 					label : function(tooltipItem, data) {
 						var dataset = data.datasets[tooltipItem.datasetIndex];
@@ -139,20 +176,22 @@ console.log(chartData);
 							return previousValue + currentValue;
 						});
 						var currentValue = dataset.data[tooltipItem.index];
-						//var returnElement;
-						/*if(!id.toUpperCase().includes("CPU")){
-							if(currentValue<1024){
+						var returnElement;
+						if(!id.toUpperCase().includes("CPU")){
+							if(currentValue>=  memoryFig[1]){
+								return ((currentValue/parseInt(memoryFig[1])).toFixed(2) + memoryConv[2]);
+							}else if(currentValue<1024){
 								return (currentValue + memoryConv[0]);
-							} else if(currentValue>=1024 && currentValue<  memoryConv[1] ){
-								return (currentValue + memoryConv[0]);
+							} else if(currentValue>=memoryFig[0] && currentValue<  memoryFig[1] ){
+								return (currentValue + memoryConv[1]);
 							}
 						}else{
 							var precentage = Math.floor(((currentValue / total) * 100) + 0.5);
 							return precentage + "%";
-						}*/
-						var precentage = Math
+						}
+						/*var precentage = Math
 								.floor(((currentValue / total) * 100) + 0.5);
-						return precentage + "%";
+						return precentage + "%";*/
 					}
 				}
 			}
@@ -199,4 +238,31 @@ function getTotalValue(arr) {
 	for (var i = 0; i < arr.length; i++)
 		total += arr[i];
 	return total;
+}
+
+/*
+function getDropDownList(name, id, optionList) {
+    var combo = $("<select></select>").attr("id", id).attr("name", name);
+
+    $.each(optionList, function (i, el) {
+        combo.append("<option>" + el + "</option>");
+    });
+
+    return combo;
+    // OR
+    $("#SELECTOR").append(combo);
+}*/
+
+
+function getDropDownList( id, optionList) {
+	
+		var selectElement= document.getElementById(id);
+	    //var combo = $("<select></select>").attr("id", id).attr("name", name);
+	
+		for (var i = 0; i<=optionList.length; i++){
+		    var opt = document.createElement('option');
+		    opt.value = optionList[i];
+		    opt.innerHTML = optionList[i];
+		    selectElement.appendChild(opt);
+		}
 }
