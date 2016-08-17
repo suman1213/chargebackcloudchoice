@@ -337,7 +337,10 @@ console.log(chartData);
 if(h.getItem(id) != undefined){
 	h.getItem(id).destroy();
 }
-
+var chartLegend = true;
+if(chartType==='bar'){
+	chartLegend=false;
+}
 
     var pieChart = new Chart(canvasId, {
 		type : chartType,
@@ -370,7 +373,10 @@ if(h.getItem(id) != undefined){
 						
 					}
 				}
-			}
+			},
+    legend:{
+        display:chartLegend
+    }
 
 		}
 	});
