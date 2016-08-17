@@ -331,7 +331,6 @@ var populateChartDetails = function(data, id, chartType) {
 	var ctx = canvasId.getContext("2d");
 	var midX = canvasId.width / 2;
 	var midY = canvasId.height / 2;
-	var totalValue = getTotalValue(data.data);
 console.log(chartData);
     
 if(h.getItem(id) != undefined){
@@ -375,52 +374,18 @@ if(chartType==='bar'){
 				}
 			},
     legend:{
-        display:chartLegend
+        display:false
     }
-
+			
 		}
 	});
  h.addItem(id, pieChart);
 	var radius = pieChart.outerRadius;
-
-	function drawSegmentValues() {
-
-		for (var i = 0; i < pieChart.segments.length; i++) {
-			ctx.fillStyle = "white";
-			var textSize = canvasId.width / 15;
-			ctx.font = textSize + "px Verdana";
-			// Get needed variables
-			var value = pieChart.segments[i].value / totalValue * 100;
-			if (Math.round(value) !== value)
-				value = (pieChart.segments[i].value / totalValue * 100)
-						.toFixed(1);
-			value = value + '%';
-
-			var startAngle = pieChart.segments[i].startAngle;
-			var endAngle = pieChart.segments[i].endAngle;
-			var middleAngle = startAngle + ((endAngle - startAngle) / 2);
-
-			// Compute text location
-			var posX = (radius / 2) * Math.cos(middleAngle) + midX;
-			var posY = (radius / 2) * Math.sin(middleAngle) + midY;
-
-			// Text offside by middle
-			var w_offset = ctx.measureText(value).width / 2;
-			var h_offset = textSize / 4;
-
-			ctx.fillText(value, posX - w_offset, posY + h_offset);
-		}
-
-	}
-	/*End of draw Segment*/
+ 
+	 var legend = pieChart.generateLegend();
+	document.getElementById(id+"Legend").innerHTML = legend;
 }
 
-function getTotalValue(arr) {
-	var total = 0;
-	for (var i = 0; i < arr.length; i++)
-		total += arr[i];
-	return total;
-}
 
 
 

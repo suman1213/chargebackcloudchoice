@@ -8,10 +8,11 @@
 <script type="text/javascript" src="chargeback.js"></script>
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="jquery.min.js"></script>
+<script type="text/javascript" src="legend.js"></script>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    
+    <link rel="stylesheet" href="charge.css">
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>  -->
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -117,8 +118,14 @@
 				   			<th style="padding-right: 100px">Unutilised Memory</th>
 				   		</tr>
 				   		<tr>
-							<td style="padding-right: 100px"><canvas id="memory" width="200px" height="400px"></canvas></td>
-							<td style="padding-right: 100px"> <canvas id="unusedMemory" width="200px" height="400px"></canvas></td>
+							<td style="padding-right: 100px">
+							<canvas id="memory" width="200px" height="400px"></canvas>
+							<div id="memoryLegend" class="baby-box"></div>
+							</td>
+							<td style="padding-right: 100px"> 
+							<canvas id="unusedMemory" width="200px" height="400px"></canvas>
+							<div id="unusedMemoryLegend" class="baby-box"></div>
+							</td>
 						</tr>
 				</table>
 				</div>
@@ -130,8 +137,16 @@
 								<th style="padding-right: 100px">Unutilised CPU</th>
 							</tr>
 							<tr>
-								<td style="padding-right: 100px"><canvas id="cpu" width="200px" height="400px"></canvas></td>
-								<td style="padding-right: 100px"><canvas id="freeCPU" width="200px" height="400px"></canvas></td>
+								<td style="padding-right: 100px">
+								<canvas id="cpu" width="200px" height="400px"></canvas>
+								<div id="cpuLegend" class="baby-box"></div>
+								
+								</td>
+								<td style="padding-right: 100px">
+								<canvas id="freeCPU" width="200px" height="400px"></canvas>
+								<div id="freeCPULegend" class="baby-box"></div>
+								
+								</td>
 							</tr>
 					</table>
 				 			
@@ -143,7 +158,11 @@
 								<th >Utilised Disk</th>
 							</tr>
 							<tr>
-								<td><canvas id="disk" width="200px" height="400px"></canvas></td>
+								<td>
+								<canvas id="disk" width="200px" height="400px"></canvas>
+								<div id="diskLegend" class="baby-box"></div>
+								
+								</td>
 							</tr>
 					</table>
 				</div>
