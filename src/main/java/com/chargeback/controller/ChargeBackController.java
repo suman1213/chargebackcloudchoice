@@ -29,13 +29,13 @@ import com.chargeback.vo.UsageRecord;
 public class ChargeBackController {
 
 	// TODO :: Need to fetch this from Eureka Server Client Id by just giving application name 
-	private static final String INSTANCE_METRICS_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getInstanceMetrics";
-	private static final String FREERESOURRCE_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getFreeResource";
+	private static final String INSTANCE_METRICS_URL = "http://chargeback-api.cfapps.io/metrics/getInstanceMetrics";
+	private static final String FREERESOURRCE_URL = "http://chargeback-api.cfapps.io/metrics/getFreeResource";
 	
-	private static final String ORG_LIST_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getOrgList";
-	private static final String SPACELIST_URL = "http://metricsfetchdemo-unflaming-overcensoriousness.cfapps.io/metrics/getSpaceList";
+	private static final String ORG_LIST_URL = "http://chargeback-api.cfapps.io/metrics/getOrgList";
+	private static final String SPACELIST_URL = "http://chargeback-api.cfapps.io/metrics/getSpaceList";
 
-	@Autowired private RestTemplate restTemplate; 
+	@Autowired  private RestTemplate restTemplate; 
 
 	/**
 	 * 

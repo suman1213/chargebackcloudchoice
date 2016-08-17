@@ -217,7 +217,7 @@ var getMemoryUsageDetails = function() {
 	$.ajax({
 		url : "getResourceDetails/USED/MEM/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
-			populateChartDetails(data, "memory");
+			populateChartDetails(data, "memory", 'pie');
 		}
 	});
 
@@ -234,7 +234,7 @@ var getUnusedDetails = function() {
 	$.ajax({
 		url : "getResourceDetails/UNUSED/MEM/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
-			populateChartDetails(data, "unusedMemory");
+			populateChartDetails(data, "unusedMemory",'pie');
 		}
 	});
 
@@ -249,7 +249,7 @@ var getCPUUsageDetails = function() {
 	$.ajax({
 		url : "getResourceDetails/USED/CPU/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
-			populateChartDetails(data, "cpu");
+			populateChartDetails(data, "cpu", 'pie');
 		}
 	});
 
@@ -265,7 +265,7 @@ var getFreeCPUUsageDetails = function() {
 	$.ajax({
 		url : "getResourceDetails/UNUSED/CPU/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
-			populateChartDetails(data, "freeCPU");
+			populateChartDetails(data, "freeCPU", 'pie');
 		}
 	});
 
@@ -283,7 +283,7 @@ var getDiskUsageDetails = function() {
 	$.ajax({
 		url : "getResourceDetails/USED/DISK/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
-			populateChartDetails(data, "disk");
+			populateChartDetails(data, "disk", 'bar');
 		}
 	});
 
@@ -302,22 +302,27 @@ var getlabelsArray = function(labeList) {
 
 /* Utility Function to create an Integer Array*/
 
-var getdataArray = function(data) {
+var getdataArray = function(data, chartType) {
 	var dataArray = [];
+	var divisor=1;
+	if(chartType==='bar'){
+		divisor = 1024*1024;
+	}
 	for (var i = 0; i < data.length; i++) {
-		dataArray.push(parseFloat(data[i]));
+		dataArray.push(parseFloat(data[i])/divisor);
 	}
 	return dataArray;
 };
 
 /* Function to populate chart Details */
-var populateChartDetails = function(data, id) {
+var populateChartDetails = function(data, id, chartType) {
+	console.log(chartType);
 	var canvasId = document.getElementById(id);
 	var colorArray = getcolorArray(data.label);
 	var chartData = {
 		labels : getlabelsArray(data.label),
 		datasets : [ {
-			data : getdataArray(data.data),
+			data : getdataArray(data.data, chartType),
 			backgroundColor : colorArray,
 			hoverBackgroundColor : colorArray
 		} ]
@@ -335,7 +340,7 @@ if(h.getItem(id) != undefined){
 
 
     var pieChart = new Chart(canvasId, {
-		type : 'pie',
+		type : chartType,
 		data : chartData,
 		options : {
 			responsive : false,
