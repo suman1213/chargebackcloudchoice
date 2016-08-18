@@ -27,7 +27,9 @@ import com.chargeback.vo.UsageRecord;
  */
 @RestController
 public class ChargeBackController {
-
+	
+	
+	private static final String INSTANCE_SUMMARY_URL = "http://localhost:8080/chargeback/getResourceDetailsSummary";
 	// TODO :: Need to fetch this from Eureka Server Client Id by just giving application name 
 	private static final String INSTANCE_METRICS_URL = "http://chargeback-api.cfapps.io/metrics/getInstanceMetrics";
 	private static final String FREERESOURRCE_URL = "http://chargeback-api.cfapps.io/metrics/getFreeResource";
@@ -36,6 +38,72 @@ public class ChargeBackController {
 	private static final String SPACELIST_URL = "http://chargeback-api.cfapps.io/metrics/getSpaceList";
 
 	@Autowired  private RestTemplate restTemplate; 
+	
+	
+	
+	/*
+	@GET
+	@Path("/friends")
+	@Produces("application/json")*/
+	@RequestMapping(value="/getResourceDetailsSummary", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	private String getSummary() {
+		
+		String jsonVal="[  "+
+				"{  "+
+				"\"summary\":\"$1000\","+
+				"\"cpu\":\"$500\","+
+				"\"memory\":\"$400\","+
+				"\"disk\":\"$100\","+
+				"\"orgName\":\"Org-1\""+
+				"},"+
+				"{ "+
+				"\"summary\":\"$5000.00\","+
+				"\"cpu\":\"$1000\","+
+				"\"memory\":\"$3000\","+
+				"\"disk\":\"$1000\","+
+				"\"orgName\":\"Org-2\""+
+				"},"+
+				"{  "+
+				"\"summary\":\"$500.00\","+
+				"\"cpu\":\"$100\","+
+				"\"memory\":\"$350\","+
+				"\"disk\":\"$50\","+
+				"\"orgName\":\"Org-3\""+
+				"}"+
+				"]";
+		
+		return jsonVal;
+		
+	    
+	}
+	
+	@RequestMapping(value="/getResourceDetailsSummaryVal", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	private ChartVO getSummaryVal() {
+		final ResponseEntity<List<UsageRecord>> response = restTemplate.exchange(INSTANCE_SUMMARY_URL, HttpMethod.GET, HttpEntity.EMPTY,
+				new ParameterizedTypeReference<List<UsageRecord>>() {
+				});
+		
+		Function<ResponseEntity<List<UsageRecord>>, List<String>> usedResourceFunction = null;
+		Function<ResponseEntity<List<UsageRecord>>, List<String>> appLabelFunction = null;
+		
+		
+		 /*appLabel ->response.getBody()
+			.stream().filter(usageRecord -> (usageRecord.getOrgName().equals(orgName) && usageRecord.getSpaceName().equals(space) )).map(usageRecord -> usageRecord.getAppname().concat(" - ")
+					.concat(usageRecord.getInstanceIndex())).collect(Collectors.toList());
+					
+					
+					map(usageRecord -> usageRecord.getDisk()).collect(Collectors.toList());
+*/
+		usedResourceFunction = summary ->response.getBody()
+				.stream().map(usageRecord -> usageRecord.getSummary()).collect(Collectors.toList());
+		
+		appLabelFunction = appLabel ->response.getBody()
+				.stream().map(usageRecord -> usageRecord.getOrgName()).collect(Collectors.toList());
+		
+		return getParameterizedUsageDetails(response, usedResourceFunction, appLabelFunction);
+		
+	}
+	
 
 	/**
 	 * 
@@ -50,6 +118,7 @@ public class ChargeBackController {
 		final ResponseEntity<List<UsageRecord>> response = restTemplate.exchange(INSTANCE_METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<List<UsageRecord>>() {
 				});
+		
 		Function<ResponseEntity<List<UsageRecord>>, List<String>> usedResourceFunction = null;
 		Function<ResponseEntity<List<UsageRecord>>, List<String>> appLabelFunction = null;
 		
