@@ -14,6 +14,8 @@ public class UsageRecord {
 	
 	private String spaceName;
 	
+	private String summary;
+	
 	private String instanceIndex;
 
 	public String getCpu() {
@@ -62,6 +64,14 @@ public class UsageRecord {
 
 	public void setSpaceName(String spaceName) {
 		this.spaceName = spaceName;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 
 	public String getInstanceIndex() {

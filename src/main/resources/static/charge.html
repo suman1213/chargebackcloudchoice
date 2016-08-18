@@ -106,10 +106,25 @@
 								</table>
 				<div>
 				<ul class="nav nav-pills">
+				  <li role="presentation"  class="tablinks" onclick="getSummaryDetails();openTab(event, 'summaryTab');"><a href="#">Summary</a></li>
 				  <li role="presentation"  class=" active tablinks" onclick="getMemoryUsageDetails();getUnusedDetails();openTab(event, 'memoryTab');"><a href="#">Memory</a></li>
 				  <li role="presentation"   class="tablinks" onclick="getCPUUsageDetails();getFreeCPUUsageDetails();openTab(event, 'cpuTab');"><a href="#">CPU</a></li>
 				  <li role="presentation"  class="tablinks" onclick="getDiskUsageDetails();openTab(event, 'diskTab');"><a href="#">Disk</a></li>
 				</ul>
+				
+				
+				<div id="summaryTab" style="visibility: hidden;"  class="tabcontent">	
+				   <table>
+				   		<tr>
+							<td style="padding-right: 100px">
+							<canvas id="summary" width="200px" height="400px"></canvas>
+							<p>abc</p>
+							<div id="summaryLegend" class="baby-box"></div>
+							</td>
+							
+						</tr>
+				</table>
+				</div>
 				
 				
 				<div id="memoryTab"   class="tabcontent">	

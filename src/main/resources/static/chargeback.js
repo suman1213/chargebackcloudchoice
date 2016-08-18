@@ -161,7 +161,7 @@ var populateOrgDropDown = function(vals){
 
 var clearAllCharts = function(){
 	
-	var vals = ["cpu", "freecpu","memory", "unusedMemory", "disk"];
+	var vals = ["cpu", "freecpu","memory", "unusedMemory", "disk","summary"];
 	$.each(vals, function(value, index) {
 		if(h.getItem(value) != undefined){
 			h.getItem(value).destroy();
@@ -192,6 +192,9 @@ var populateSpaceDropDown = function(vals){
 var displayBasedOnTab = function(name){
 
 	switch(name){
+	case "summaryTab":
+		getSummaryDetails();
+		break;
 	case "memoryTab":
 		getMemoryUsageDetails();
 		getUnusedDetails();
@@ -207,6 +210,26 @@ var displayBasedOnTab = function(name){
 
 }
 
+
+var getSummaryDetails = function() {
+	if($( "#OrgSelect option:selected" ).text() ==="" || $( "#OrgSelect option:selected" ).text() === undefined || $( "#OrgSelect option:selected" ).text() === null){
+		return;
+	}
+	if($( "#OrgSpace option:selected" ).text() ==="" || $( "#OrgSpace option:selected" ).text() === undefined || $( "#OrgSpace option:selected" ).text() === null){
+		return;
+	}
+		
+
+	$.ajax({
+		url : "getResourceDetailsSummaryVal",
+		success : function(data) {
+			populateChartDetails(data, "summary", 'pie');
+		}
+	});
+
+}
+
+
 var getMemoryUsageDetails = function() {
 	if($( "#OrgSelect option:selected" ).text() ==="" || $( "#OrgSelect option:selected" ).text() === undefined || $( "#OrgSelect option:selected" ).text() === null){
 		return;
@@ -217,7 +240,7 @@ var getMemoryUsageDetails = function() {
 	$.ajax({
 		url : "getResourceDetails/USED/MEM/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
-			populateChartDetails(data, "memory", 'pie');
+			populateChartDetails(data, "summary", 'pie');
 		}
 	});
 
@@ -315,8 +338,17 @@ var getdataArray = function(data, chartType) {
 };
 
 /* Function to populate chart Details */
+
+
+
+
+
 var populateChartDetails = function(data, id, chartType) {
+	//alert(summaryData.length);
 	console.log(chartType);
+	console.log("data.label : - " + data.label);
+	console.log("data.data : - " + data.data);
+	
 	var canvasId = document.getElementById(id);
 	var colorArray = getcolorArray(data.label);
 	var chartData = {
@@ -402,7 +434,7 @@ function getDropDownList( id, optionList) {
 function openTab(evt, tabName) {
     var i, tabcontent, tablinks;
   //  var tab = document.getElementsByName(tabName);
-    selectedTab = tabName;
+  //  selectedTab = tabName;
     document.getElementById(tabName).style.visibility  = 'visible';
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
