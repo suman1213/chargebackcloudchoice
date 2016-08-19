@@ -50,24 +50,24 @@ public class ChargeBackController {
 		
 		String jsonVal="[  "+
 				"{  "+
-				"\"summary\":\"$1000\","+
-				"\"cpu\":\"$500\","+
-				"\"memory\":\"$400\","+
-				"\"disk\":\"$100\","+
+				"\"summary\":\"1000\","+
+				"\"cpu\":\"500\","+
+				"\"memory\":\"400\","+
+				"\"disk\":\"100\","+
 				"\"orgName\":\"Org-1\""+
 				"},"+
 				"{ "+
-				"\"summary\":\"$5000.00\","+
-				"\"cpu\":\"$1000\","+
-				"\"memory\":\"$3000\","+
-				"\"disk\":\"$1000\","+
+				"\"summary\":\"5000.00\","+
+				"\"cpu\":\"1000\","+
+				"\"memory\":\"3000\","+
+				"\"disk\":\"1000\","+
 				"\"orgName\":\"Org-2\""+
 				"},"+
 				"{  "+
-				"\"summary\":\"$500.00\","+
-				"\"cpu\":\"$100\","+
-				"\"memory\":\"$350\","+
-				"\"disk\":\"$50\","+
+				"\"summary\":\"500.00\","+
+				"\"cpu\":\"100\","+
+				"\"memory\":\"350\","+
+				"\"disk\":\"50\","+
 				"\"orgName\":\"Org-3\""+
 				"}"+
 				"]";
@@ -77,8 +77,8 @@ public class ChargeBackController {
 	    
 	}
 	
-	@RequestMapping(value="/getResourceDetailsSummaryVal", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	private ChartVO getSummaryVal() {
+	@RequestMapping(value="/getResourceDetails/{infoType}/{resourceType}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	private ChartVO getSummaryVal(@PathVariable String infoType , @PathVariable String resourceType){
 		final ResponseEntity<List<UsageRecord>> response = restTemplate.exchange(INSTANCE_SUMMARY_URL, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<List<UsageRecord>>() {
 				});
@@ -94,8 +94,25 @@ public class ChargeBackController {
 					
 					map(usageRecord -> usageRecord.getDisk()).collect(Collectors.toList());
 */
-		usedResourceFunction = summary ->response.getBody()
-				.stream().map(usageRecord -> usageRecord.getSummary()).collect(Collectors.toList());
+		if(resourceType.equals("SUMMARY")){
+			usedResourceFunction = summary ->response.getBody()
+				.stream().map(usageRecord -> usageRecord.getSummary().replace("$", "")).collect(Collectors.toList());
+		
+		}else if(resourceType.equals("MEM")){
+			usedResourceFunction = usedMemory ->response.getBody()
+					.stream().map(usageRecord -> usageRecord.getMemory().replace("$", "")).collect(Collectors.toList());
+			
+			}else if(resourceType.equals("CPU")){
+				usedResourceFunction = usedCPU ->response.getBody()
+						.stream().map(usageRecord -> usageRecord.getCpu().replace("$", "")).collect(Collectors.toList());
+
+			}else if(resourceType.equals("DISK")){
+				usedResourceFunction = usedCPU ->response.getBody()
+						.stream().map(usageRecord -> usageRecord.getDisk().replace("$", "")).collect(Collectors.toList());
+
+			}else{
+				throw new RuntimeException("Please Select Resource Type from : CPU, DISK, MEM");
+			}
 		
 		appLabelFunction = appLabel ->response.getBody()
 				.stream().map(usageRecord -> usageRecord.getOrgName()).collect(Collectors.toList());
