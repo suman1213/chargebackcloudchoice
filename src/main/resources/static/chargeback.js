@@ -391,7 +391,7 @@ var populateChartDetails = function(data, id, chartType, utilizationBy) {
 	var ctx = canvasId.getContext("2d");
 	var midX = canvasId.width / 2;
 	var midY = canvasId.height / 2;
-console.log(chartData);
+console.log("chartData.data : " + chartData);
     
 if(h.getItem(id) != undefined){
 	h.getItem(id).destroy();
@@ -445,6 +445,7 @@ if(chartType==='bar'){
 	var radius = pieChart.outerRadius;
  
 	 var legend = pieChart.generateLegend();
+	 console.log("legend ---- " +legend);
 	document.getElementById(id+"Legend").innerHTML = legend;
 }
 

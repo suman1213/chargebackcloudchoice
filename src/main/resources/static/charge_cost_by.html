@@ -24,7 +24,7 @@
 
 <style>
 .navbar.navbar-inverse.navbar-fixed-top {
-	background-color: #0000ff;
+	background-color: #0082AE;
 }
 
 .navbar-inverse .navbar-brand {
@@ -35,22 +35,43 @@
 	color: #04050b;
 }
 
+.nav-pills li a {
+color:#fff;background-color:#337abf;
+}
+
+.nav-pills li a:hover {
+color:#000;background-color:#337abf;
+}
+
+.nav-pills li a:focus {
+color:#000;background-color:#337abf;
+}
+
+
+.nav-pills li.active a:focus{
+color:#fff;background-color:#99ccff;
+}
+
+.nav-pills li.active a:hover{
+color:#fff;background-color:#99ccff;
+}
+
 </style>
 
 
 </head>
 <body onLoad="displayBasedOnTab();">
 	<nav class="navbar navbar-inverse navbar-fixed-top"  role="navigation">
-		<div class="container">
+		<div class="container" >
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header" >
-			<img src="cg_icon.jpg" style="width: 200px; height: 70px; float:left;" />&nbsp;
-				<font color="white" size="6px">Chargeback User Interface</font>
+			<img src="partner-capgemini.jpg" style="width: 200px; height: 70px; float:left; " />&nbsp;
+			<font color="white" size="6px">Chargeback User Interface</font>
 				
 			</div>
 			<div class="collapse navbar-collapse" id="chargeLink">
 				<ul class="nav navbar-nav" style="padding-right: 60px;">
-					<li  ><a href="charge.html"><font color="white"> Utilization by Application</font></a></li>
+					<li  ><a href="charge.html" onmouseover=""><font color="white"> Utilization by Application</font></a></li>
 				</ul>
 			</div>
 		</div>
@@ -74,12 +95,14 @@
 							
 								<table style="width:100%">
 									<tr>
-										<td style="padding-right: 20px; width:33%"><label for="PreiodSelect">Period</label>
+										<td style="padding-right: 20px; width:33%"><label for="PreiodSelect">Period : </label>
+											<select name="PreiodSelect" id="PreiodSelect"><option value="Current">Current</option></select></td>
 									</tr>
 									<tr>
-										<td style="padding-right: 20px; width:33%"><select name="PreiodSelect" id="PreiodSelect"><option value="Current">Current</option></select>
+									
 									</tr>
 								</table>
+								<br/><br/>
 				<div>
 				<ul class="nav nav-pills">
 				  <li role="presentation"  class=" active tablinks" onclick="getSummaryCostDetails();openTab(event, 'summaryTab');"><a href="#">Summary</a></li>
@@ -92,8 +115,11 @@
 				   <table>
 				   		<tr>
 							<td style="padding-right: 100px">
-							<canvas id="summary" width="200px" height="400px"></canvas>
+								<canvas id="summary" width="200px" height="400px"></canvas>
+							</td>
+							<td style="padding-right: 100px">
 							<div id="summaryLegend" class="baby-box"></div>
+							
 							</td>
 							
 						</tr>
@@ -105,7 +131,9 @@
 				   <table>
 				   		<tr>
 							<td style="padding-right: 100px">
-							<canvas id="memory" width="200px" height="400px"></canvas>
+								<canvas id="memory" width="200px" height="400px"></canvas>
+							</td>
+							<td style="padding-right: 100px">
 							<div id="memoryLegend" class="baby-box"></div>
 							</td>
 							
@@ -118,9 +146,10 @@
 					<table>
 							<tr>
 								<td style="padding-right: 100px">
-								<canvas id="cpu" width="200px" height="400px"></canvas>
-								<div id="cpuLegend" class="baby-box"></div>
-								
+									<canvas id="cpu" width="200px" height="400px"></canvas>
+								</td>
+								<td style="padding-right: 100px">
+									<div id="cpuLegend" class="baby-box"></div>
 								</td>
 								
 							</tr>
@@ -133,9 +162,10 @@
 							
 							<tr>
 								<td>
-								<canvas id="disk" width="200px" height="400px"></canvas>
-								<div id="diskLegend" class="baby-box"></div>
-								
+									<canvas id="disk" width="200px" height="400px"></canvas>
+								</td>
+								<td style="padding-right: 100px">
+									<div id="diskLegend" class="baby-box"></div>
 								</td>
 							</tr>
 					</table>
