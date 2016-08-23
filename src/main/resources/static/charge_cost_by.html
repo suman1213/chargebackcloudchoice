@@ -35,34 +35,11 @@
 	color: #04050b;
 }
 
-.dropdown-toggle {
-	color: #04050b;
-}
-
-.table-fixed thead {
-	width: 97%;
-}
-
-.table-fixed tbody {
-	height: 150px;
-	overflow-y: auto;
-	width: 100%;
-}
-
-.table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td,
-	.table-fixed th {
-	display: block;
-}
-
-.table-fixed tbody td, .table-fixed thead>tr>th {
-	float: left;
-	border-bottom-width: 0;
-}
 </style>
 
 
 </head>
-<body onLoad="getOrganisations();">
+<body onLoad="displayBasedOnTab();">
 	<nav class="navbar navbar-inverse navbar-fixed-top"  role="navigation">
 		<div class="container">
 			<!-- Brand and toggle get grouped for better mobile display -->
@@ -73,10 +50,9 @@
 			</div>
 			<div class="collapse navbar-collapse" id="chargeLink">
 				<ul class="nav navbar-nav" style="padding-right: 60px;">
-					<li  ><a href="charge_cost_by.html"><font color="white"> Cost by Application</font></a></li>
+					<li  ><a href="charge.html"><font color="white"> Utilization by Application</font></a></li>
 				</ul>
 			</div>
-			
 		</div>
 	</nav>
 	
@@ -85,7 +61,7 @@
 		<div  class="row ">
 				<div class="page-header">
 					<p>&nbsp;</p>
-					<h1> Utilization by Application</h1>
+					<h1> Cost by Application</h1>
 				</div>
 		</div>
 		
@@ -98,61 +74,55 @@
 							
 								<table style="width:100%">
 									<tr>
-										<td style="padding-right: 20px; width:33%"><label for="OrgSelect">Organization</label>
-										<td style="padding-right: 20px; width:33%"><label for="OrgSpace">Space</label>
-										
+										<td style="padding-right: 20px; width:33%"><label for="PreiodSelect">Period</label>
 									</tr>
-									<tr></tr>
 									<tr>
-										<td style="padding-right: 20px; width:33%"><select name="OrgSelect" id="OrgSelect"></select>
-										<td style="padding-right: 20px; width:33%"><select name="OrgSpace" id="OrgSpace"></select>
+										<td style="padding-right: 20px; width:33%"><select name="PreiodSelect" id="PreiodSelect"><option value="Current">Current</option></select>
 									</tr>
-		
 								</table>
 				<div>
 				<ul class="nav nav-pills">
-				  <li role="presentation"  class=" active tablinks" onclick="getMemoryUsageDetails();getUnusedDetails();openTab(event, 'memoryTab');"><a href="#">Memory</a></li>
-				  <li role="presentation"   class="tablinks" onclick="getCPUUsageDetails();getFreeCPUUsageDetails();openTab(event, 'cpuTab');"><a href="#">CPU</a></li>
-				  <li role="presentation"  class="tablinks" onclick="getDiskUsageDetails();openTab(event, 'diskTab');"><a href="#">Disk</a></li>
+				  <li role="presentation"  class=" active tablinks" onclick="getSummaryCostDetails();openTab(event, 'summaryTab');"><a href="#">Summary</a></li>
+				   <li role="presentation"  class="  tablinks" onclick="getMemoryCostDetails();openTab(event, 'memoryTab');"><a href="#">Memory</a></li>
+				  <li role="presentation"   class=" tablinks" onclick="getCPUCostDetails();openTab(event, 'cpuTab');"><a href="#">CPU</a></li>
+				  <li role="presentation"  class=" tablinks" onclick="getDiskCostDetails();openTab(event, 'diskTab');"><a href="#">Disk</a></li> 
 				</ul>
 				
+				<div id="summaryTab"   class="tabcontent">	
+				   <table>
+				   		<tr>
+							<td style="padding-right: 100px">
+							<canvas id="summary" width="200px" height="400px"></canvas>
+							<div id="summaryLegend" class="baby-box"></div>
+							</td>
+							
+						</tr>
+				</table>
+				</div>
 				
 				
-				<div id="memoryTab"   class="tabcontent">	
-				   <table><tr>
-				   			<th style="padding-right: 100px">Utilised Memory</th>
-				   			<th style="padding-right: 100px">Unutilised Memory</th>
-				   		</tr>
+				 <div id="memoryTab"    style="visibility: hidden;"  class="tabcontent">	
+				   <table>
 				   		<tr>
 							<td style="padding-right: 100px">
 							<canvas id="memory" width="200px" height="400px"></canvas>
 							<div id="memoryLegend" class="baby-box"></div>
 							</td>
-							<td style="padding-right: 100px"> 
-							<canvas id="unusedMemory" width="200px" height="400px"></canvas>
-							<div id="unusedMemoryLegend" class="baby-box"></div>
-							</td>
+							
 						</tr>
 				</table>
 				</div>
 				
 				
 				<div id="cpuTab" style="visibility: hidden;" class="tabcontent">
-					<table><tr>
-								<th style="padding-right: 100px">Utilised CPU</th>
-								<th style="padding-right: 100px">Unutilised CPU</th>
-							</tr>
+					<table>
 							<tr>
 								<td style="padding-right: 100px">
 								<canvas id="cpu" width="200px" height="400px"></canvas>
 								<div id="cpuLegend" class="baby-box"></div>
 								
 								</td>
-								<td style="padding-right: 100px">
-								<canvas id="freeCPU" width="200px" height="400px"></canvas>
-								<div id="freeCPULegend" class="baby-box"></div>
 								
-								</td>
 							</tr>
 					</table>
 				 			
@@ -160,9 +130,7 @@
 				
 				<div  id="diskTab" style="visibility: hidden;"  class="tabcontent">
 					<table>
-							<tr>
-								<th >Utilised Disk</th>
-							</tr>
+							
 							<tr>
 								<td>
 								<canvas id="disk" width="200px" height="400px"></canvas>
@@ -171,7 +139,7 @@
 								</td>
 							</tr>
 					</table>
-				</div>
+				</div> 
 				</div>	
 						</div>
 						
@@ -188,5 +156,4 @@
 
 
 </body>
-
 </html>

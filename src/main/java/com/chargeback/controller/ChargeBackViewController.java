@@ -18,6 +18,6 @@ public class ChargeBackViewController {
 	public String viewUsageDetails() {
 		// TODO:: Add suffix in application.properties file so that .html need not be added 
 	    // Move the constants to Constant file 
-		return "charge.html";
+		return "charge_cost_by.html";
 	}
 }

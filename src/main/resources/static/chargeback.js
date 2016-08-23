@@ -211,24 +211,53 @@ var displayBasedOnTab = function(name){
 }
 
 
-var getSummaryDetails = function() {
-	if($( "#OrgSelect option:selected" ).text() ==="" || $( "#OrgSelect option:selected" ).text() === undefined || $( "#OrgSelect option:selected" ).text() === null){
-		return;
-	}
-	if($( "#OrgSpace option:selected" ).text() ==="" || $( "#OrgSpace option:selected" ).text() === undefined || $( "#OrgSpace option:selected" ).text() === null){
-		return;
-	}
-		
-
+var getSummaryCostDetails = function() {
+	
 	$.ajax({
-		url : "getResourceDetailsSummaryVal",
+		url : "getResourceDetails/COST/SUMMARY",
 		success : function(data) {
-			populateChartDetails(data, "summary", 'pie');
+			populateChartDetails(data, "summary", 'pie',"cost");
+			
+		}
+		
+	});
+
+}
+
+var getMemoryCostDetails = function() {
+	
+	$.ajax({
+		url : "getResourceDetails/COST/MEM",
+		success : function(data) {
+			populateChartDetails(data, "memory", 'pie',"cost");
 		}
 	});
 
 }
 
+var getCPUCostDetails = function() {
+	
+	$.ajax({
+		url : "getResourceDetails/COST/CPU" ,
+		success : function(data) {
+			populateChartDetails(data, "cpu", 'pie',"cost");
+		}
+	});
+
+}
+
+
+
+var getDiskCostDetails = function() {
+	
+	$.ajax({
+		url : "getResourceDetails/COST/DISK",
+		success : function(data) {
+			populateChartDetails(data, "disk", 'bar',"cost");
+		}
+	});
+
+}
 
 var getMemoryUsageDetails = function() {
 	if($( "#OrgSelect option:selected" ).text() ==="" || $( "#OrgSelect option:selected" ).text() === undefined || $( "#OrgSelect option:selected" ).text() === null){
@@ -240,7 +269,7 @@ var getMemoryUsageDetails = function() {
 	$.ajax({
 		url : "getResourceDetails/USED/MEM/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
-			populateChartDetails(data, "summary", 'pie');
+			populateChartDetails(data, "memory", 'pie');
 		}
 	});
 
@@ -343,11 +372,10 @@ var getdataArray = function(data, chartType) {
 
 
 
-var populateChartDetails = function(data, id, chartType) {
-	//alert(summaryData.length);
-	console.log(chartType);
-	console.log("data.label : - " + data.label);
-	console.log("data.data : - " + data.data);
+var populateChartDetails = function(data, id, chartType, utilizationBy) {
+	
+	console.log("id ---- " +id);
+	
 	
 	var canvasId = document.getElementById(id);
 	var colorArray = getcolorArray(data.label);
@@ -389,7 +417,9 @@ if(chartType==='bar'){
 						});
 						var currentValue = dataset.data[tooltipItem.index];
 						var returnElement;
-						if(!id.toUpperCase().includes("CPU")){
+						if(utilizationBy=="cost"){
+							return "$"+currentValue;
+						}else if(!id.toUpperCase().includes("CPU")){
 							if(currentValue>=  memoryFig[1]){
 								return ((currentValue/parseInt(memoryFig[1])).toFixed(2) + memoryConv[2]);
 							}else if(currentValue>=memoryFig[0] && currentValue<  memoryFig[1] ){
@@ -434,7 +464,7 @@ function getDropDownList( id, optionList) {
 function openTab(evt, tabName) {
     var i, tabcontent, tablinks;
   //  var tab = document.getElementsByName(tabName);
-  //  selectedTab = tabName;
+    selectedTab = tabName;
     document.getElementById(tabName).style.visibility  = 'visible';
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
