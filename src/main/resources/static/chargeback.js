@@ -98,7 +98,7 @@ var memoryConv=["B","KB","MB","GB","TB" ];
 var memoryFig=[1024,1048576];
 var h= new HashTable({one:1});
 
-var selectedTab = "memoryTab";
+var selectedTab = "summaryCostTab";
 
 var getcolorArray = function(labeList) {
 	var ids = [];
@@ -191,13 +191,27 @@ var populateSpaceDropDown = function(vals){
 
 var displayBasedOnTab = function(name){
 
+	console.log(name);
 	switch(name){
-	case "summaryTab":
-		getSummaryDetails();
+	case "summaryCostTab":
+		getSummaryCostDetails();
 		break;
+		
+	case "memoryCostTab":
+		getMemoryCostDetails();
+		break;
+		
+	case "cpuCostTab":
+		getCPUCostDetails();
+		break;
+		
+	case "diskCostTab":
+		getDiskCostDetails();
+		break;
+		
 	case "memoryTab":
 		getMemoryUsageDetails();
-		getUnusedDetails();
+		//getUnusedDetails();
 		break;
 	case "diskTab":
 		getDiskUsageDetails();
@@ -214,9 +228,9 @@ var displayBasedOnTab = function(name){
 var getSummaryCostDetails = function() {
 	
 	$.ajax({
-		url : "getResourceDetails/COST/SUMMARY",
+		url : "getCostDetails/COST/SUMMARY",
 		success : function(data) {
-			populateChartDetails(data, "summary", 'pie',"cost");
+			populateChartDetails(data, "summaryCost", 'pie',"cost");
 			
 		}
 		
@@ -227,9 +241,9 @@ var getSummaryCostDetails = function() {
 var getMemoryCostDetails = function() {
 	
 	$.ajax({
-		url : "getResourceDetails/COST/MEM",
+		url : "getCostDetails/COST/MEM",
 		success : function(data) {
-			populateChartDetails(data, "memory", 'pie',"cost");
+			populateChartDetails(data, "memoryCost", 'pie',"cost");
 		}
 	});
 
@@ -238,9 +252,9 @@ var getMemoryCostDetails = function() {
 var getCPUCostDetails = function() {
 	
 	$.ajax({
-		url : "getResourceDetails/COST/CPU" ,
+		url : "getCostDetails/COST/CPU" ,
 		success : function(data) {
-			populateChartDetails(data, "cpu", 'pie',"cost");
+			populateChartDetails(data, "cpuCost", 'pie',"cost");
 		}
 	});
 
@@ -251,9 +265,9 @@ var getCPUCostDetails = function() {
 var getDiskCostDetails = function() {
 	
 	$.ajax({
-		url : "getResourceDetails/COST/DISK",
+		url : "getCostDetails/COST/DISK",
 		success : function(data) {
-			populateChartDetails(data, "disk", 'bar',"cost");
+			populateChartDetails(data, "diskCost", 'bar',"cost");
 		}
 	});
 
@@ -462,20 +476,44 @@ function getDropDownList( id, optionList) {
 		    selectElement.appendChild(opt);
 		}
 }
-function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
+function openTab(evt, className, linkClassName, tabName) {
+	var i, tabcontent, tablinks;
+	console.log("className : " + className);
+	console.log("linkClassName : " + linkClassName);
+	console.log("tabName : " + tabName);
   //  var tab = document.getElementsByName(tabName);
     selectedTab = tabName;
     document.getElementById(tabName).style.visibility  = 'visible';
-    tabcontent = document.getElementsByClassName("tabcontent");
+    tabcontent = document.getElementsByClassName(className);
+    
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
     }
-    tablinks = document.getElementsByClassName("tablinks");
+    tablinks = document.getElementsByClassName(linkClassName);
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
     
+}
+
+defaultSelectedTab = function(tabName,className,linkClassName,activeElement){
+	selectedTab = tabName;
+	console.log(" document.getElementById(tabName).className :----- " + document.getElementById(tabName).className);
+	displayBasedOnTab(selectedTab);
+	document.getElementById(tabName).style.visibility  = 'visible';
+    tabcontent = document.getElementsByClassName(className);
+    
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName(linkClassName);
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    if(!document.getElementById(activeElement).className.includes(" active")){
+    	document.getElementById(activeElement).className=  document.getElementById(activeElement).className + " active";
+	}
 }

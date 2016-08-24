@@ -31,11 +31,11 @@ public class ChargeBackController {
 	
 	private static final String INSTANCE_SUMMARY_URL = "http://localhost:8080/chargeback/getResourceDetailsSummary";
 	// TODO :: Need to fetch this from Eureka Server Client Id by just giving application name 
-	private static final String INSTANCE_METRICS_URL = "http://chargeback-api.cfapps.io/metrics/getInstanceMetrics";
-	private static final String FREERESOURRCE_URL = "http://chargeback-api.cfapps.io/metrics/getFreeResource";
+	private static final String INSTANCE_METRICS_URL = "http://chargeback-api.cglean.com/metrics/getInstanceMetrics";
+	private static final String FREERESOURRCE_URL = "http://chargeback-api.cglean.com/metrics/getFreeResource";
 	
-	private static final String ORG_LIST_URL = "http://chargeback-api.cfapps.io/metrics/getOrgList";
-	private static final String SPACELIST_URL = "http://chargeback-api.cfapps.io/metrics/getSpaceList";
+	private static final String ORG_LIST_URL = "http://chargeback-api.cglean.com/metrics/getOrgList";
+	private static final String SPACELIST_URL = "http://chargeback-api.cglean.com/metrics/getSpaceList";
 
 	@Autowired  private RestTemplate restTemplate; 
 	
@@ -50,24 +50,24 @@ public class ChargeBackController {
 		
 		String jsonVal="[  "+
 				"{  "+
-				"\"summary\":\"1000\","+
-				"\"cpu\":\"500\","+
-				"\"memory\":\"400\","+
-				"\"disk\":\"100\","+
+				"\"summary\":\"$1000\","+
+				"\"cpu\":\"$500\","+
+				"\"memory\":\"$400\","+
+				"\"disk\":\"$100\","+
 				"\"orgName\":\"Org-1\""+
 				"},"+
 				"{ "+
-				"\"summary\":\"5000.00\","+
-				"\"cpu\":\"1000\","+
-				"\"memory\":\"3000\","+
-				"\"disk\":\"1000\","+
+				"\"summary\":\"$5000.00\","+
+				"\"cpu\":\"$1000\","+
+				"\"memory\":\"$3000\","+
+				"\"disk\":\"$1000\","+
 				"\"orgName\":\"Org-2\""+
 				"},"+
 				"{  "+
-				"\"summary\":\"500.00\","+
-				"\"cpu\":\"100\","+
-				"\"memory\":\"350\","+
-				"\"disk\":\"50\","+
+				"\"summary\":\"$500.00\","+
+				"\"cpu\":\"$100\","+
+				"\"memory\":\"$350\","+
+				"\"disk\":\"$50\","+
 				"\"orgName\":\"Org-3\""+
 				"}"+
 				"]";
@@ -77,7 +77,7 @@ public class ChargeBackController {
 	    
 	}
 	
-	@RequestMapping(value="/getResourceDetails/{infoType}/{resourceType}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/getCostDetails/{infoType}/{resourceType}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	private ChartVO getSummaryVal(@PathVariable String infoType , @PathVariable String resourceType){
 		final ResponseEntity<List<UsageRecord>> response = restTemplate.exchange(INSTANCE_SUMMARY_URL, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<List<UsageRecord>>() {
@@ -97,26 +97,37 @@ public class ChargeBackController {
 		if(resourceType.equals("SUMMARY")){
 			usedResourceFunction = summary ->response.getBody()
 				.stream().map(usageRecord -> usageRecord.getSummary().replace("$", "")).collect(Collectors.toList());
+			appLabelFunction = appLabel ->response.getBody()
+					.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.getSummary())).collect(Collectors.toList());
 		
 		}else if(resourceType.equals("MEM")){
 			usedResourceFunction = usedMemory ->response.getBody()
 					.stream().map(usageRecord -> usageRecord.getMemory().replace("$", "")).collect(Collectors.toList());
+			appLabelFunction = appLabel ->response.getBody()
+					.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.getMemory())).collect(Collectors.toList());
+
 			
 			}else if(resourceType.equals("CPU")){
 				usedResourceFunction = usedCPU ->response.getBody()
 						.stream().map(usageRecord -> usageRecord.getCpu().replace("$", "")).collect(Collectors.toList());
+				appLabelFunction = appLabel ->response.getBody()
+						.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.getCpu())).collect(Collectors.toList());
+
 
 			}else if(resourceType.equals("DISK")){
 				usedResourceFunction = usedCPU ->response.getBody()
 						.stream().map(usageRecord -> usageRecord.getDisk().replace("$", "")).collect(Collectors.toList());
+				appLabelFunction = appLabel ->response.getBody()
+						.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.getDisk())).collect(Collectors.toList());
+
 
 			}else{
 				throw new RuntimeException("Please Select Resource Type from : CPU, DISK, MEM");
 			}
 		
-		appLabelFunction = appLabel ->response.getBody()
-				.stream().map(usageRecord -> usageRecord.getOrgName()).collect(Collectors.toList());
-		
+		/*appLabelFunction = appLabel ->response.getBody()
+				.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.get)).collect(Collectors.toList());
+		*/
 		return getParameterizedUsageDetails(response, usedResourceFunction, appLabelFunction);
 		
 	}
