@@ -516,4 +516,9 @@ defaultSelectedTab = function(tabName,className,linkClassName,activeElement){
     if(!document.getElementById(activeElement).className.includes(" active")){
     	document.getElementById(activeElement).className=  document.getElementById(activeElement).className + " active";
 	}
+    
+    expandPanelBody = function(elementName){
+    	document.getElementById(tabName).style.width="1000px";
+    	
+    }
 }

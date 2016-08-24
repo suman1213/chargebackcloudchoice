@@ -227,7 +227,7 @@ color:#fff;background-color:#99ccff;
 
 			<div class="col-md-6">
 				<div class="panel panel-default">
-					<div class="panel-body" style="height:500px">
+					<div id="panelBody" class="panel-body"  style="height:500px; width:800">
 						<div id="resourceBlock">
 							
 								<table style="width:100%">
@@ -246,7 +246,7 @@ color:#fff;background-color:#99ccff;
 				<div>
 				<ul class="nav nav-pills">
 				  <li id="liMemoryTab" role="presentation"  class=" active tablinks resourceTablinks" onclick="getMemoryUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'memoryTab');"><a href="#">Memory</a></li>
-				  <li role="presentation"   class="tablinks resourceTablinks" onclick="getCPUUsageDetails();getFreeCPUUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'cpuTab');"><a href="#">CPU</a></li>
+				  <li role="presentation"   class="tablinks resourceTablinks" onclick="getCPUUsageDetails();getFreeCPUUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'cpuTab');expandPanelBody('panelBody');"><a href="#">CPU</a></li>
 				  <li role="presentation"  class="tablinks resourceTablinks" onclick="getDiskUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'diskTab');"><a href="#">Disk</a></li>
 				</ul>
 				
@@ -259,12 +259,16 @@ color:#fff;background-color:#99ccff;
 				   		</tr>
 				   		<tr>
 							<td style="padding-right: 100px">
-							<canvas id="memory" width="200px" height="400px"></canvas>
-							<div id="memoryLegend" class="baby-box"></div>
+								<canvas id="memory" width="200px" height="400px"></canvas>
+							</td>
+							<td>
+							<div id="memoryLegend" class="baby-box"  style="width:200px"></div>
 							</td>
 							<td style="padding-right: 100px"> 
-							<canvas id="unusedMemory" width="200px" height="400px"></canvas>
-							<div id="unusedMemoryLegend" class="baby-box"></div>
+								<canvas id="unusedMemory" width="200px" height="400px"></canvas>
+							</td>
+							<td>
+							<div id="unusedMemoryLegend" class="baby-box"  style="width:200px"></div>
 							</td>
 						</tr>
 				</table>
@@ -278,14 +282,16 @@ color:#fff;background-color:#99ccff;
 							</tr>
 							<tr>
 								<td style="padding-right: 100px">
-								<canvas id="cpu" width="200px" height="400px"></canvas>
-								<div id="cpuLegend" class="baby-box"></div>
-								
+									<canvas id="cpu" width="200px" height="400px"></canvas>
+								</td>
+								<td>
+									<div id="cpuLegend" class="baby-box" style="width:200px"></div>
 								</td>
 								<td style="padding-right: 100px">
-								<canvas id="freeCPU" width="200px" height="400px"></canvas>
-								<div id="freeCPULegend" class="baby-box"></div>
-								
+									<canvas id="freeCPU" width="200px" height="400px"></canvas>
+								</td>
+								<td>
+									<div id="freeCPULegend" class="baby-box" style="width:200px"></div>
 								</td>
 							</tr>
 					</table>
