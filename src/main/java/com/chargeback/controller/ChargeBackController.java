@@ -35,26 +35,26 @@ import com.chargeback.vo.UsageRecord;
 public class ChargeBackController {
 	
 	
-	private static final String INSTANCE_SUMMARY_URL = "http://localhost:8080/chargeback/getResourceDetailsSummary";
+	//private static final String INSTANCE_SUMMARY_URL = "http://localhost:8080/chargeback/getResourceDetailsSummary";
 	// TODO :: Need to fetch this from Eureka Server Client Id by just giving application name 
 	private static final String INSTANCE_METRICS_URL = "http://chargeback-api.cglean.com/metrics/getInstanceMetrics";
 	private static final String FREERESOURRCE_URL = "http://chargeback-api.cglean.com/metrics/getFreeResource";
 	
 	private static final String ORG_LIST_URL = "http://chargeback-api.cglean.com/metrics/getOrgList";
 	private static final String SPACELIST_URL = "http://chargeback-api.cglean.com/metrics/getSpaceList";
-	private static final String GETMAX_QUOTA = "http://chargeback-api.cglean.com/metrics/getQuota";
+	//private static final String GETMAX_QUOTA = "http://chargeback-api.cglean.com/metrics/getQuota";
 	
 	private static final String INFRA_API="http://infrastructure-api.cglean.com/cost?start=2016-08-24&end=2016-08-24";
-	private static final String GETQUOTA= "http://chargeback-api.cglean.com/metrics/getTotalQuota";
+	//private static final String GETQUOTA= "http://chargeback-api.cglean.com/metrics/getTotalQuota";
 	@Autowired  private RestTemplate restTemplate; 
 	
 	//@Autowired private InfraApiClient infraClient; 
 	
 	
-	@RequestMapping(value="/getResourceDetailsSummary", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	//@RequestMapping(value="/getResourceDetailsSummary", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	private List<PriceValueSummary> getSummary() throws ParseException {
 		
-		final SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd");
+		//final SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd");
 		final ResponseEntity<CostVO> infraApiResponse = restTemplate.exchange(INFRA_API, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<CostVO>() {
 				});
@@ -65,9 +65,10 @@ public class ChargeBackController {
 		List<PriceValueSummary> priceValueSummaryList = new ArrayList<>();
 		
 		
-		/*final ResponseEntity<List<UsageRecord>> instanceMetrics = restTemplate.exchange(INSTANCE_METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
+		final ResponseEntity<List<UsageRecord>> instanceMetrics = restTemplate.exchange(INSTANCE_METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<List<UsageRecord>>() {
-				});*/
+				});
+		
 		
 		final ResponseEntity<List<String>> orgListResponse = restTemplate.exchange(ORG_LIST_URL, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<List<String>>() {
@@ -76,50 +77,62 @@ public class ChargeBackController {
 	
 		NumberFormat format = NumberFormat.getCurrencyInstance();
 		
-		final ResponseEntity<Double> accountMemoryQuotaResponse = restTemplate.exchange(GETQUOTA + "/" + "MEM"  ,
+		/*final ResponseEntity<Double> accountMemoryQuotaResponse = restTemplate.exchange(GETQUOTA + "/" + "MEM"  ,
 				HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
 				});
-		double accountMemoryQuota = accountMemoryQuotaResponse.getBody();
+		double accountMemoryQuota = accountMemoryQuotaResponse.getBody();*/
 		
-		final ResponseEntity<Double> accountCPUQuotaResponse = restTemplate.exchange(GETQUOTA + "/" + "CPU" , HttpMethod.GET,
+		/*final ResponseEntity<Double> accountCPUQuotaResponse = restTemplate.exchange(GETQUOTA + "/" + "CPU" , HttpMethod.GET,
 				HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
 				});
 		double accountCPUQuota = accountCPUQuotaResponse.getBody();
 		final ResponseEntity<Double> accountDiskQuotaResponse = restTemplate.exchange(GETQUOTA + "/" + "DISK" ,
 				HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
-				});
-		Double accountDiskQuota = accountDiskQuotaResponse.getBody();
+				});*/
+		//Double accountDiskQuota = accountDiskQuotaResponse.getBody();
 		
+		
+		double allOrgsCpuSum =instanceMetrics.getBody().stream().mapToDouble(usageRecord -> Double.valueOf(usageRecord.getCpu())).sum();
+		double allOrgsDiskSum = instanceMetrics.getBody().stream().mapToDouble(usageRecord -> Double.valueOf(usageRecord.getDisk())).sum();
+		double allOrgMemorySum = instanceMetrics.getBody().stream().mapToDouble(usageRecord -> Double.valueOf(usageRecord.getMemory())).sum();
 		for (String orgName : orgListResponse.getBody()) {
 			
-			final ResponseEntity<Double> totalMemoryResponse = restTemplate.exchange(GETMAX_QUOTA + "/" + "MEM" + "/" +orgName ,
+		/*	final ResponseEntity<Double> totalMemoryResponse = restTemplate.exchange(GETMAX_QUOTA + "/" + "MEM" + "/" +orgName ,
 					HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
-					});
-			double memoryQuota = totalMemoryResponse.getBody();
+					});*/
+			//double memoryQuota = totalMemoryResponse.getBody();
 			
-			final ResponseEntity<Double> totalCPUResponse = restTemplate.exchange(GETMAX_QUOTA + "/" + "CPU" + "/" +orgName, HttpMethod.GET,
+			/*final ResponseEntity<Double> totalCPUResponse = restTemplate.exchange(GETMAX_QUOTA + "/" + "CPU" + "/" +orgName, HttpMethod.GET,
 					HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
 					});
-			double totalCPUQuota = totalCPUResponse.getBody();
-			final ResponseEntity<Double> totalDiskResponse = restTemplate.exchange(GETMAX_QUOTA + "/" + "DISK" + "/" +orgName,
+			double totalCPUQuota = totalCPUResponse.getBody();*/
+			/*final ResponseEntity<Double> totalDiskResponse = restTemplate.exchange(GETMAX_QUOTA + "/" + "DISK" + "/" +orgName,
 					HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
-					});
-			Double totalDiskQuota = totalDiskResponse.getBody();
+					});*/
+			//Double totalDiskQuota = totalDiskResponse.getBody();
 			
 			PriceValueSummary priceValueSummary = new PriceValueSummary();
 			// Sum up for Memory
 			
-			double pctMemoryUsed = (Double.valueOf(memoryQuota) / Double.valueOf(accountMemoryQuota));
+			double orgMemorySum = instanceMetrics.getBody().stream().filter(usageRecord -> usageRecord.getOrgName().equals(orgName))
+            		.mapToDouble(usageRecord -> Double.valueOf(usageRecord.getMemory())).sum();
+			
+			double pctMemoryUsed = (Double.valueOf(orgMemorySum) / Double.valueOf(allOrgMemorySum));
 			double amtForMemory =(format.parse(costVO.getMemory()).doubleValue()) * pctMemoryUsed;
 			priceValueSummary.setMemory(amtForMemory);
 			// Sum up for CPU
-		
-			double pctCpuUsed = (Double.valueOf(totalCPUQuota) / Double.valueOf(accountCPUQuota));
+            double orgCpuSum = instanceMetrics.getBody().stream().filter(usageRecord -> usageRecord.getOrgName().equals(orgName))
+            		.mapToDouble(usageRecord -> Double.valueOf(usageRecord.getCpu())).sum();
+			double pctCpuUsed = (Double.valueOf(orgCpuSum) / Double.valueOf(allOrgsCpuSum));
 			double amtForCPU =(format.parse(costVO.getCpu()).doubleValue()) * pctCpuUsed;
 			priceValueSummary.setCpu(amtForCPU);
 			// SUM for DISK
+			double orgDiskSum = instanceMetrics.getBody().stream().filter(usageRecord -> usageRecord.getOrgName().equals(orgName))
+            		.mapToDouble(usageRecord -> Double.valueOf(usageRecord.getDisk())).sum();
+			/*double pctDiskUsed = (Double.valueOf(totalDiskQuota) / Double.valueOf(accountDiskQuota));
+			double amtForDisk = (format.parse(costVO.getDisk()).doubleValue()) * pctDiskUsed;*/
 			
-			double pctDiskUsed = (Double.valueOf(totalDiskQuota) / Double.valueOf(accountDiskQuota));
+			double pctDiskUsed = (Double.valueOf(orgDiskSum) / Double.valueOf(allOrgsDiskSum));
 			double amtForDisk = (format.parse(costVO.getDisk()).doubleValue()) * pctDiskUsed;
 			priceValueSummary.setDisk(amtForDisk);
 			priceValueSummary.setSummary(amtForDisk + amtForCPU + amtForMemory);
@@ -133,45 +146,38 @@ public class ChargeBackController {
 	}
 	
 	@RequestMapping(value="/getCostDetails/{infoType}/{resourceType}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	private ChartVO getSummaryVal(@PathVariable String infoType , @PathVariable String resourceType){
-		final ResponseEntity<List<UsageRecord>> response = restTemplate.exchange(INSTANCE_SUMMARY_URL, HttpMethod.GET, HttpEntity.EMPTY,
-				new ParameterizedTypeReference<List<UsageRecord>>() {
-				});
-	
-
+	private ChartVO getSummaryVal(@PathVariable String infoType , @PathVariable String resourceType) throws ParseException{
 		
-		Function<ResponseEntity<List<UsageRecord>>, List<String>> usedResourceFunction = null;
-		Function<ResponseEntity<List<UsageRecord>>, List<String>> appLabelFunction = null;
+		final List<PriceValueSummary> priceValueSummaryList = getSummary();
 		
+		Function<List<PriceValueSummary>, List<String>> usedResourceFunction = null;
+		Function<List<PriceValueSummary>, List<String>> appLabelFunction = null;
 		
-	
 		if(resourceType.equals("SUMMARY")){
-			usedResourceFunction = summary ->response.getBody()
-				.stream().map(usageRecord -> usageRecord.getSummary().replace("$", "")).collect(Collectors.toList());
-			appLabelFunction = appLabel ->response.getBody()
-					.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.getSummary())).collect(Collectors.toList());
+			usedResourceFunction = summary ->priceValueSummaryList
+				.stream().map(usageRecord -> String.valueOf(usageRecord.getSummary())).collect(Collectors.toList());
+			appLabelFunction = appLabel ->priceValueSummaryList
+					.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(String.valueOf(usageRecord.getSummary()))).collect(Collectors.toList());
 		
 		}else if(resourceType.equals("MEM")){
-			usedResourceFunction = usedMemory ->response.getBody()
-					.stream().map(usageRecord -> usageRecord.getMemory().replace("$", "")).collect(Collectors.toList());
-			appLabelFunction = appLabel ->response.getBody()
-					.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.getMemory())).collect(Collectors.toList());
+			usedResourceFunction = usedMemory ->priceValueSummaryList
+					.stream().map(usageRecord -> String.valueOf(usageRecord.getMemory())).collect(Collectors.toList());
+			appLabelFunction = appLabel ->priceValueSummaryList
+					.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(String.valueOf(usageRecord.getMemory()))).collect(Collectors.toList());
 
 			
 			}else if(resourceType.equals("CPU")){
-				usedResourceFunction = usedCPU ->response.getBody()
-						.stream().map(usageRecord -> usageRecord.getCpu().replace("$", "")).collect(Collectors.toList());
-				appLabelFunction = appLabel ->response.getBody()
-						.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.getCpu())).collect(Collectors.toList());
+				usedResourceFunction = usedCPU ->priceValueSummaryList
+						.stream().map(usageRecord -> String.valueOf(usageRecord.getCpu())).collect(Collectors.toList());
+				appLabelFunction = appLabel ->priceValueSummaryList
+						.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(String.valueOf(usageRecord.getCpu()))).collect(Collectors.toList());
 
 
 			}else if(resourceType.equals("DISK")){
-				usedResourceFunction = usedCPU ->response.getBody()
-						.stream().map(usageRecord -> usageRecord.getDisk().replace("$", "")).collect(Collectors.toList());
-				appLabelFunction = appLabel ->response.getBody()
-						.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.getDisk())).collect(Collectors.toList());
-
-
+				usedResourceFunction = usedCPU ->priceValueSummaryList
+						.stream().map(usageRecord -> String.valueOf(usageRecord.getDisk())).collect(Collectors.toList());
+				appLabelFunction = appLabel ->priceValueSummaryList
+						.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(String.valueOf(usageRecord.getDisk()))).collect(Collectors.toList());
 			}else{
 				throw new RuntimeException("Please Select Resource Type from : CPU, DISK, MEM");
 			}
@@ -179,7 +185,7 @@ public class ChargeBackController {
 		/*appLabelFunction = appLabel ->response.getBody()
 				.stream().map(usageRecord -> usageRecord.getOrgName().concat(" ").concat(usageRecord.get)).collect(Collectors.toList());
 		*/
-		return getParameterizedUsageDetails(response, usedResourceFunction, appLabelFunction);
+		return getParameterizedUsageDetails(priceValueSummaryList, usedResourceFunction, appLabelFunction);
 		
 	}
 	
@@ -272,6 +278,18 @@ private ChartVO getParameterizedUsageDetails(final ResponseEntity<List<UsageReco
 	
 	final List<String> resourceUsed = resourceUsedFunction.apply(response);
 	final List<String> appLabel = appLabelFunction.apply(response);
+	
+	final ChartVO chartVO = new ChartVO();
+	chartVO.setData(resourceUsed);
+	chartVO.setLabel(appLabel);
+	return chartVO;
+}
+
+
+private ChartVO getParameterizedUsageDetails(final List<PriceValueSummary> summaryList, Function<List<PriceValueSummary>, List<String>> resourceUsedFunction, Function<List<PriceValueSummary>, List<String>> appLabelFunction){
+	
+	final List<String> resourceUsed = resourceUsedFunction.apply(summaryList);
+	final List<String> appLabel = appLabelFunction.apply(summaryList);
 	
 	final ChartVO chartVO = new ChartVO();
 	chartVO.setData(resourceUsed);

@@ -211,7 +211,7 @@ var displayBasedOnTab = function(name){
 		
 	case "memoryTab":
 		getMemoryUsageDetails();
-		//getUnusedDetails();
+		getUnusedDetails();
 		break;
 	case "diskTab":
 		getDiskUsageDetails();
