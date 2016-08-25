@@ -1,5 +1,9 @@
 package com.chargeback.controller;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -17,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.chargeback.vo.ChartVO;
+import com.chargeback.vo.CostVO;
+import com.chargeback.vo.PriceValueSummary;
 import com.chargeback.vo.UsageRecord;
 
 
@@ -36,44 +42,93 @@ public class ChargeBackController {
 	
 	private static final String ORG_LIST_URL = "http://chargeback-api.cglean.com/metrics/getOrgList";
 	private static final String SPACELIST_URL = "http://chargeback-api.cglean.com/metrics/getSpaceList";
-
+	private static final String GETMAX_QUOTA = "http://chargeback-api.cglean.com/metrics/getQuota";
+	
+	private static final String INFRA_API="http://infrastructure-api.cglean.com/cost?start=2016-08-24&end=2016-08-24";
+	private static final String GETQUOTA= "http://chargeback-api.cglean.com/metrics/getTotalQuota";
 	@Autowired  private RestTemplate restTemplate; 
 	
+	//@Autowired private InfraApiClient infraClient; 
 	
 	
-	/*
-	@GET
-	@Path("/friends")
-	@Produces("application/json")*/
 	@RequestMapping(value="/getResourceDetailsSummary", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	private String getSummary() {
+	private List<PriceValueSummary> getSummary() throws ParseException {
 		
-		String jsonVal="[  "+
-				"{  "+
-				"\"summary\":\"$1000\","+
-				"\"cpu\":\"$500\","+
-				"\"memory\":\"$400\","+
-				"\"disk\":\"$100\","+
-				"\"orgName\":\"Org-1\""+
-				"},"+
-				"{ "+
-				"\"summary\":\"$5000.00\","+
-				"\"cpu\":\"$1000\","+
-				"\"memory\":\"$3000\","+
-				"\"disk\":\"$1000\","+
-				"\"orgName\":\"Org-2\""+
-				"},"+
-				"{  "+
-				"\"summary\":\"$500.00\","+
-				"\"cpu\":\"$100\","+
-				"\"memory\":\"$350\","+
-				"\"disk\":\"$50\","+
-				"\"orgName\":\"Org-3\""+
-				"}"+
-				"]";
+		final SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd");
+		final ResponseEntity<CostVO> infraApiResponse = restTemplate.exchange(INFRA_API, HttpMethod.GET, HttpEntity.EMPTY,
+				new ParameterizedTypeReference<CostVO>() {
+				});
+		//CostVO costVO = infraClient.getCost(dateFormat.format(new Date()), dateFormat.format(new Date()));
 		
-		return jsonVal;
+		CostVO costVO = infraApiResponse.getBody();
 		
+		List<PriceValueSummary> priceValueSummaryList = new ArrayList<>();
+		
+		
+		/*final ResponseEntity<List<UsageRecord>> instanceMetrics = restTemplate.exchange(INSTANCE_METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
+				new ParameterizedTypeReference<List<UsageRecord>>() {
+				});*/
+		
+		final ResponseEntity<List<String>> orgListResponse = restTemplate.exchange(ORG_LIST_URL, HttpMethod.GET, HttpEntity.EMPTY,
+				new ParameterizedTypeReference<List<String>>() {
+				});
+		
+	
+		NumberFormat format = NumberFormat.getCurrencyInstance();
+		
+		final ResponseEntity<Double> accountMemoryQuotaResponse = restTemplate.exchange(GETQUOTA + "/" + "MEM"  ,
+				HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
+				});
+		double accountMemoryQuota = accountMemoryQuotaResponse.getBody();
+		
+		final ResponseEntity<Double> accountCPUQuotaResponse = restTemplate.exchange(GETQUOTA + "/" + "CPU" , HttpMethod.GET,
+				HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
+				});
+		double accountCPUQuota = accountCPUQuotaResponse.getBody();
+		final ResponseEntity<Double> accountDiskQuotaResponse = restTemplate.exchange(GETQUOTA + "/" + "DISK" ,
+				HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
+				});
+		Double accountDiskQuota = accountDiskQuotaResponse.getBody();
+		
+		for (String orgName : orgListResponse.getBody()) {
+			
+			final ResponseEntity<Double> totalMemoryResponse = restTemplate.exchange(GETMAX_QUOTA + "/" + "MEM" + "/" +orgName ,
+					HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
+					});
+			double memoryQuota = totalMemoryResponse.getBody();
+			
+			final ResponseEntity<Double> totalCPUResponse = restTemplate.exchange(GETMAX_QUOTA + "/" + "CPU" + "/" +orgName, HttpMethod.GET,
+					HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
+					});
+			double totalCPUQuota = totalCPUResponse.getBody();
+			final ResponseEntity<Double> totalDiskResponse = restTemplate.exchange(GETMAX_QUOTA + "/" + "DISK" + "/" +orgName,
+					HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Double>() {
+					});
+			Double totalDiskQuota = totalDiskResponse.getBody();
+			
+			PriceValueSummary priceValueSummary = new PriceValueSummary();
+			// Sum up for Memory
+			
+			double pctMemoryUsed = (Double.valueOf(memoryQuota) / Double.valueOf(accountMemoryQuota));
+			double amtForMemory =(format.parse(costVO.getMemory()).doubleValue()) * pctMemoryUsed;
+			priceValueSummary.setMemory(amtForMemory);
+			// Sum up for CPU
+		
+			double pctCpuUsed = (Double.valueOf(totalCPUQuota) / Double.valueOf(accountCPUQuota));
+			double amtForCPU =(format.parse(costVO.getCpu()).doubleValue()) * pctCpuUsed;
+			priceValueSummary.setCpu(amtForCPU);
+			// SUM for DISK
+			
+			double pctDiskUsed = (Double.valueOf(totalDiskQuota) / Double.valueOf(accountDiskQuota));
+			double amtForDisk = (format.parse(costVO.getDisk()).doubleValue()) * pctDiskUsed;
+			priceValueSummary.setDisk(amtForDisk);
+			priceValueSummary.setSummary(amtForDisk + amtForCPU + amtForMemory);
+			priceValueSummary.setOrgName(orgName);
+			priceValueSummaryList.add(priceValueSummary);
+
+		}
+
+		return priceValueSummaryList;
 	    
 	}
 	
@@ -82,18 +137,14 @@ public class ChargeBackController {
 		final ResponseEntity<List<UsageRecord>> response = restTemplate.exchange(INSTANCE_SUMMARY_URL, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<List<UsageRecord>>() {
 				});
+	
+
 		
 		Function<ResponseEntity<List<UsageRecord>>, List<String>> usedResourceFunction = null;
 		Function<ResponseEntity<List<UsageRecord>>, List<String>> appLabelFunction = null;
 		
 		
-		 /*appLabel ->response.getBody()
-			.stream().filter(usageRecord -> (usageRecord.getOrgName().equals(orgName) && usageRecord.getSpaceName().equals(space) )).map(usageRecord -> usageRecord.getAppname().concat(" - ")
-					.concat(usageRecord.getInstanceIndex())).collect(Collectors.toList());
-					
-					
-					map(usageRecord -> usageRecord.getDisk()).collect(Collectors.toList());
-*/
+	
 		if(resourceType.equals("SUMMARY")){
 			usedResourceFunction = summary ->response.getBody()
 				.stream().map(usageRecord -> usageRecord.getSummary().replace("$", "")).collect(Collectors.toList());
