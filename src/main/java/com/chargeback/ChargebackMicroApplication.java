@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
 @EnableFeignClients
-//@EnableEurekaClient
+@EnableEurekaClient
 public class ChargebackMicroApplication {
 
 	
