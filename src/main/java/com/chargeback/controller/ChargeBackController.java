@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,7 @@ import com.chargeback.vo.CostVO;
 import com.chargeback.vo.PriceValueSummary;
 import com.chargeback.vo.UsageRecord;
 
+import static com.chargeback.constants.ChargeBackConstants.*;
 /**
  * This Controller gives the Chart Data after calling the metrics service to the
  * UI.
@@ -33,6 +36,7 @@ import com.chargeback.vo.UsageRecord;
 @RestController
 public class ChargeBackController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChargeBackController.class);
 
 	@Autowired
 	private InfraApiClient infraApiClient;
@@ -47,11 +51,8 @@ public class ChargeBackController {
 
 		final List<PriceValueSummary> priceValueSummaryList = new ArrayList<>();
 		final List<UsageRecord> instanceData =  chargeBackApiClient.getAllApplicationInstanceData();
-		
-		
 
 		final NumberFormat format = NumberFormat.getCurrencyInstance();
-
 
 		final double allOrgsCpuSum = instanceData.stream()
 				.mapToDouble(usageRecord -> Double.valueOf(usageRecord.getCpu())).sum();
@@ -95,7 +96,7 @@ public class ChargeBackController {
 
 	}
 
-	@RequestMapping(value = "/getCostDetails/{infoType}/{resourceType}/{startDate}/{endDate}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = GET_COST_DETAILS, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	private ChartVO getSummaryVal(@PathVariable String infoType, @PathVariable String resourceType, @PathVariable final String startDate, @PathVariable final String endDate)
 			throws ParseException {
 
@@ -104,27 +105,27 @@ public class ChargeBackController {
 		Function<List<PriceValueSummary>, List<String>> usedResourceFunction = null;
 		Function<List<PriceValueSummary>, List<String>> appLabelFunction = null;
 
-		if (resourceType.equals("SUMMARY")) {
+		if (resourceType.equals(SUMMARY)) {
 			usedResourceFunction = summary -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.getSummary())).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(usageRecord -> usageRecord.getOrgName()
 					.concat(" $").concat(String.valueOf(usageRecord.getSummary()))).collect(Collectors.toList());
 
-		} else if (resourceType.equals("MEM")) {
+		} else if (resourceType.equals(MEMORY)) {
 			usedResourceFunction = usedMemory -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.getMemory())).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
 					usageRecord -> usageRecord.getOrgName().concat(" $").concat(String.valueOf(usageRecord.getMemory())))
 					.collect(Collectors.toList());
 
-		} else if (resourceType.equals("CPU")) {
+		} else if (resourceType.equals(CPU)) {
 			usedResourceFunction = usedCPU -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.getCpu())).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
 					usageRecord -> usageRecord.getOrgName().concat(" $").concat(String.valueOf(usageRecord.getCpu())))
 					.collect(Collectors.toList());
 
-		} else if (resourceType.equals("DISK")) {
+		} else if (resourceType.equals(DISK)) {
 			usedResourceFunction = usedCPU -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.getDisk())).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
@@ -146,7 +147,7 @@ public class ChargeBackController {
 	 * @param space
 	 * @return
 	 */
-	@RequestMapping(value = "/getResourceDetails/{usageType}/{resourceType}/{orgName:.+}/{space:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = GET_USAGE_DETAILS, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ChartVO getResourceUsage(@PathVariable String usageType, @PathVariable final String resourceType,
 			@PathVariable final String orgName, @PathVariable final String space) {
 	
@@ -155,19 +156,19 @@ public class ChargeBackController {
 		Function<List<UsageRecord>, List<String>> usedResourceFunction = null;
 		Function<List<UsageRecord>, List<String>> appLabelFunction = null;
 
-		if (resourceType.equals("MEM")) {
+		if (resourceType.equals(MEMORY)) {
 			usedResourceFunction = usedMemory -> instanceData.stream()
 					.filter(usageRecord -> (usageRecord.getOrgName().equals(orgName)
 							&& usageRecord.getSpaceName().equals(space)))
 					.map(usageRecord -> usageRecord.getMemory()).collect(Collectors.toList());
 
-		} else if (resourceType.equals("CPU")) {
+		} else if (resourceType.equals(CPU)) {
 			usedResourceFunction = usedCPU -> instanceData.stream()
 					.filter(usageRecord -> (usageRecord.getOrgName().equals(orgName)
 							&& usageRecord.getSpaceName().equals(space)))
 					.map(usageRecord -> usageRecord.getCpu()).collect(Collectors.toList());
 
-		} else if (resourceType.equals("DISK")) {
+		} else if (resourceType.equals(DISK)) {
 			usedResourceFunction = usedCPU -> instanceData.stream()
 					.filter(usageRecord -> (usageRecord.getOrgName().equals(orgName)
 							&& usageRecord.getSpaceName().equals(space)))
@@ -182,8 +183,8 @@ public class ChargeBackController {
 				.map(usageRecord -> usageRecord.getAppname().concat(" - ").concat(usageRecord.getInstanceIndex()))
 				.collect(Collectors.toList());
 
-		if (usageType.equals("UNUSED")) {
-			if (!resourceType.equals("DISK")) {
+		if (usageType.equals(UNUSED)) {
+			if (!resourceType.equals(DISK)) {
 				String freeResource = chargeBackApiClient.getFreeResourceForResourceType(resourceType);
 				return getUnUsedResource(instanceData, freeResource, usedResourceFunction, appLabelFunction);
 			} else {
@@ -194,13 +195,13 @@ public class ChargeBackController {
 		return getUsageDetails(instanceData, usedResourceFunction, appLabelFunction);
 	}
 
-	@RequestMapping(value = "/getOrgList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = GET_ORG_LIST, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> getOrganizationNames() {
 		
 		return chargeBackApiClient.getOrgList();
 	}
 
-	@RequestMapping(value = "/getSpaceList/{orgName:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = GET_SPACE_LIST, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> getSpaceList(@PathVariable String orgName) throws UnsupportedEncodingException {
 
 		return chargeBackApiClient.getSpaceList(URLEncoder.encode(orgName, "UTF-8"));
@@ -214,7 +215,7 @@ public class ChargeBackController {
 		final List<String> freeResource = freeResourceFunction.apply(response);
 		final List<String> appLabel = appLabelFunction.apply(response);
 		freeResource.add(freeResourceVal);
-		appLabel.add("Unutilised");
+		appLabel.add(UNUTILISED);
 		ChartVO chartVO = new ChartVO();
 		chartVO.setData(freeResource);
 		chartVO.setLabel(appLabel);
