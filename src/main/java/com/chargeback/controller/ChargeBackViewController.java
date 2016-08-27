@@ -14,7 +14,7 @@ public class ChargeBackViewController {
 	 * This method returns the main HTML page containing the chargeback details
 	 * @return This returns the view name 
 	 */
-	@RequestMapping("/view")
+	@RequestMapping("/")
 	public String viewUsageDetails() {
 		// TODO:: Add suffix in application.properties file so that .html need not be added 
 	    // Move the constants to Constant file 
