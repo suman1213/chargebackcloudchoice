@@ -1,62 +1,28 @@
 package com.chargeback.vo;
 
+/**
+ * These are value classes only 
+ * @author amit
+ *
+ */
 public class PriceValueSummary {
 
-	private double summary;
+	public final  double summary;
 	
-	private double cpu;
+	public final double cpu;
 	
-	private double disk;
+	public final double disk;
 	
-	private double memory;
+	public final double memory;
 	
-	private String orgName;
+	public final String orgName;
 
-	
-
-	public double getSummary() {
-		return summary;
-	}
-
-	public void setSummary(double summary) {
+	public PriceValueSummary(double summary, double cpu, double disk, double memory, String orgName) {
 		this.summary = summary;
-	}
-
-	public double getCpu() {
-		return cpu;
-	}
-
-	public void setCpu(double cpu) {
 		this.cpu = cpu;
-	}
-
-	public double getDisk() {
-		return disk;
-	}
-
-	public void setDisk(double disk) {
 		this.disk = disk;
-	}
-
-	public double getMemory() {
-		return memory;
-	}
-
-	public void setMemory(double memory) {
 		this.memory = memory;
-	}
-
-	public void setMemory(long memory) {
-		this.memory = memory;
-	}
-
-	public String getOrgName() {
-		return orgName;
-	}
-
-	public void setOrgName(String orgName) {
 		this.orgName = orgName;
 	}
-	
 	
 }

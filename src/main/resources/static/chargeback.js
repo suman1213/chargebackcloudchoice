@@ -82,6 +82,9 @@ function HashTable(obj)
         this.length = 0;
     }
 }
+var getYesterdaysDate = function(){
+	return moment().add(-1, 'days').format("YYYY-MM-DD");
+}
 /************************************HashTable Ends******************************************/
 
 var colors = [
@@ -224,11 +227,27 @@ var displayBasedOnTab = function(name){
 
 }
 
+var getStartDate = function(){
+	if($("#PreiodSelect option:selected").text()==="Yesterday"){
+		return  getYesterdaysDate();
+		var endDate = getYesterdaysDate();
+	}else if($("#PreiodSelect option:selected").text()==="Month"){
+		return  moment().startOf('month').format("YYYY-MM-DD");
+	}else{
+		return  getYesterdaysDate();
+	}
+}
+
+
+var getEndDate = function(){
+	return  getYesterdaysDate();
+}
 
 var getSummaryCostDetails = function() {
-	
+	var start = getStartDate();
+	var end = getEndDate();
 	$.ajax({
-		url : "getCostDetails/COST/SUMMARY",
+		url : "getCostDetails/COST/SUMMARY/" + start + "/" + end,
 		success : function(data) {
 			populateChartDetails(data, "summaryCost", 'pie',"cost");
 			
@@ -239,9 +258,10 @@ var getSummaryCostDetails = function() {
 }
 
 var getMemoryCostDetails = function() {
-	
+	var start = getStartDate();
+	var end = getEndDate();
 	$.ajax({
-		url : "getCostDetails/COST/MEM",
+		url : "getCostDetails/COST/MEM/"  + start + "/" + end,
 		success : function(data) {
 			populateChartDetails(data, "memoryCost", 'pie',"cost");
 		}
@@ -250,9 +270,10 @@ var getMemoryCostDetails = function() {
 }
 
 var getCPUCostDetails = function() {
-	
+	var start = getStartDate();
+	var end = getEndDate();
 	$.ajax({
-		url : "getCostDetails/COST/CPU" ,
+		url : "getCostDetails/COST/CPU/"  + start + "/" + end,
 		success : function(data) {
 			populateChartDetails(data, "cpuCost", 'pie',"cost");
 		}
@@ -263,9 +284,10 @@ var getCPUCostDetails = function() {
 
 
 var getDiskCostDetails = function() {
-	
+	var start = getStartDate();
+	var end = getEndDate();
 	$.ajax({
-		url : "getCostDetails/COST/DISK",
+		url : "getCostDetails/COST/DISK/"  + start + "/" + end,
 		success : function(data) {
 			populateChartDetails(data, "diskCost", 'bar',"cost");
 		}
@@ -380,12 +402,10 @@ var getdataArray = function(data, chartType) {
 	return dataArray;
 };
 
+
+
+
 /* Function to populate chart Details */
-
-
-
-
-
 var populateChartDetails = function(data, id, chartType, utilizationBy) {
 	
 	console.log("id ---- " +id);

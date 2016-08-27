@@ -8,17 +8,18 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableFeignClients
-//@EnableEurekaClient
+@EnableEurekaClient
 public class ChargebackMicroApplication {
 
-	
 	@Bean
 	public RestTemplate restTemplate() {
-	    return new RestTemplate();
+		return new RestTemplate();
 	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(ChargebackMicroApplication.class, args);
 	}
+
 }
