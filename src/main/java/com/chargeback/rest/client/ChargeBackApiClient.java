@@ -25,5 +25,5 @@ public interface  ChargeBackApiClient {
 	public List<String> getOrgList();
 	
 	@RequestMapping(value = "/getSpaceList/{orgName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<String> getSpaceList(@PathVariable("orgName") String orgName);
+	public List<String> getSpaceList(@PathVariable("orgName") final String orgName);
 }
