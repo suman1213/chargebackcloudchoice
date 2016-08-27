@@ -9,329 +9,291 @@
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="jquery.min.js"></script>
 <script type="text/javascript" src="legend.js"></script>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <link rel="stylesheet" href="charge.css">
-<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>  -->
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet"
+	href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="charge.css">
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>  -->
+<script
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
 
-<title>PWS</title>
-
-
-
-
-<style>
-
-.navbar.navbar-inverse.navbar-fixed-top {
-	background-color: #0082AE;
-}
-
-.parentTab{
-
-}
-
-.resourceTab{
-}
-
-.costTab{
-
-}
-
-.parentTablinks{
-}
-
-.costTablinks{
-}
-
-.resourceTablinks{
-}
-
-.navbar-inverse .navbar-brand {
-	color: #04050b;
-}
-
-.nav.navbar-nav li a {
-	color: #04050b;
-}
-
-.nav-pills li a {
-color:#fff;background-color:#337abf;
-}
-
-.nav-pills li a:hover {
-color:#000;background-color:#337abf;
-}
-
-.nav-pills li a:focus {
-color:#000;background-color:#337abf;
-}
-
-
-
-
-.nav-pills li.active a{
-color:#fff;background-color:#99ccff;
-}
-
-.nav-pills li.active a:focus{
-color:#fff;background-color:#99ccff;
-}
-
-
-
-.nav-pills li.active a:hover{
-color:#fff;background-color:#99ccff;
-}
-
-
-
-.panel-default {
-    border-color: #0082AE;
-}
-</style>
-
+<title>ChargeBack</title>
 
 </head>
 <body onload="getOrganisations();">
-	<nav class="navbar navbar-inverse navbar-fixed-top"  role="navigation">
-		<div class="container" >
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container">
 			<!-- Brand and toggle get grouped for better mobile display -->
-			<div class="navbar-header" >
-			<img src="partner-capgemini.jpg" style="width: 200px; height: 70px; float:left; " />&nbsp;
-			<font color="white" size="6px">Chargeback User Interface</font>
-				
+			<div class="navbar-header">
+				<img src="partner-capgemini.jpg"
+					style="width: 200px; height: 70px; float: left;" />&nbsp; <font
+					color="white" size="6px">Chargeback User Interface</font>
+
 			</div>
-			<!-- <div class="collapse navbar-collapse" id="chargeLink">
-				<ul class="nav navbar-nav" style="padding-right: 60px;">
-					<li  ><a href="charge.html"><font color="white"> Utilization by Application</font></a></li>
-				</ul>
-			</div> -->
 		</div>
 	</nav>
-	
-	<div class="container"  role="main" style="height:800px">
-	
-		 <div  class="row ">
-				<div class="page-header">
-					<p>&nbsp;</p>
-					<!-- <h1> Cost by Application</h1> -->
-				</div>
-		</div> 
-		<ul class="nav nav-pills">
-				  <li role="presentation"  class=" active tablinks parentTablinks"  onclick="openTab(event,'parentTab', 'parentTablinks', 'costTab');defaultSelectedTab('summaryCostTab','costTab','costTablinks','liSummaryTab');"><a href="#">Cost by Application</a></li>
-				    <li role="presentation"  class="  tablinks parentTablinks" onclick="openTab(event,'parentTab', 'parentTablinks','resourceTab');defaultSelectedTab('memoryTab','resourceTab','resourceTablinks','liMemoryTab');" ><a href="#">Utilization by Application</a></li> 
-				  
-		</ul>
-		
-		<div id="costTab"   class="tabcontent parentTab" style="display:block">	
-				   <div class="row ">
 
-			<div class="col-md-6">
-				<div class="panel panel-default">
-					<div class="panel-body" style="height:500px">
-						<div id="costBlock">
-							
-								<table style="width:100%">
+	<div class="container" role="main" style="height: 800px">
+
+		<div class="row ">
+			<div class="page-header">
+				<p>&nbsp;</p>
+				<!-- <h1> Cost by Application</h1> -->
+			</div>
+		</div>
+		<ul class="nav nav-pills">
+			<li role="presentation" class=" active tablinks parentTablinks"
+				onclick="openTab(event,'parentTab', 'parentTablinks', 'costTab');defaultSelectedTab('summaryCostTab','costTab','costTablinks','liSummaryTab');"><a
+				href="#">Cost by Application</a></li>
+			<li role="presentation" class="  tablinks parentTablinks"
+				onclick="openTab(event,'parentTab', 'parentTablinks','resourceTab');defaultSelectedTab('memoryTab','resourceTab','resourceTablinks','liMemoryTab');"><a
+				href="#">Utilization by Application</a></li>
+
+		</ul>
+
+		<div id="costTab" class="tabcontent parentTab" style="display: block">
+			<div class="row ">
+
+				<div class="col-md-6">
+					<div class="panel panel-default">
+						<div class="panel-body" style="height: 500px">
+							<div id="costBlock">
+
+								<table style="width: 100%">
 									<tr>
-										<td style="padding-right: 20px; width:33%"><label for="PreiodSelect">Period : </label>
-											<select name="PreiodSelect" id="PreiodSelect">
-											<option value="Yesterday">Yesterday</option>
-											<option value="Yesterday">Month</option>
-											
-											</select></td>
+										<td style="padding-right: 20px; width: 33%"><label
+											for="PreiodSelect">Period : </label> <select
+											name="PreiodSelect" id="PreiodSelect">
+												<option value="Yesterday">Yesterday</option>
+												<option value="Yesterday">Month</option>
+
+										</select></td>
 									</tr>
 									<tr>
-									
+
 									</tr>
 								</table>
-								<br/><br/>
-				<div>
-				<ul class="nav nav-pills">
-				  <li id="liSummaryTab" role="presentation"  class=" active tablinks costTablinks" onclick="getSummaryCostDetails();openTab(event,'costTab', 'costTablinks', 'summaryCostTab');"><a href="#">Summary</a></li>
-				   <li role="presentation"  class="  tablinks costTablinks" onclick="getMemoryCostDetails();openTab(event, 'costTab', 'costTablinks', 'memoryCostTab');"><a href="#">Memory</a></li>
-				  <li role="presentation"   class=" tablinks costTablinks" onclick="getCPUCostDetails();openTab(event, 'costTab', 'costTablinks', 'cpuCostTab');"><a href="#">CPU</a></li>
-				  <li role="presentation"  class=" tablinks costTablinks" onclick="getDiskCostDetails();openTab(event, 'costTab',  'costTablinks', 'diskCostTab');"><a href="#">Disk</a></li> 
-				</ul>
-				
-				<div id="summaryCostTab"   class="tabcontent costTab">	
-				   <table>
-				   		<tr>
-							<td style="padding-right: 100px">
-								<canvas id="summaryCost" width="200px" height="400px"></canvas>
-							</td>
-							<td style="padding-right: 100px">
-							<div id="summaryCostLegend" class="baby-box"  style="width:200px"></div>
-							
-							</td>
-							
-						</tr>
-				</table>
-				</div>
-				
-				
-				 <div id="memoryCostTab"    style="visibility: hidden;"  class="tabcontent costTab">	
-				   <table>
-				   		<tr>
-							<td style="padding-right: 100px">
-								<canvas id="memoryCost" width="200px" height="400px"></canvas>
-							</td>
-							<td style="padding-right: 100px">
-							<div id="memoryCostLegend" class="baby-box"  style="width:200px"></div>
-							</td>
-							
-						</tr>
-				</table>
-				</div>
-				
-				
-				<div id="cpuCostTab" style="visibility: hidden;" class="tabcontent costTab">
-					<table>
-							<tr>
-								<td style="padding-right: 100px">
-									<canvas id="cpuCost" width="200px" height="400px"></canvas>
-								</td>
-								<td style="padding-right: 100px">
-									<div id="cpuCostLegend" class="baby-box" style="width:200px"></div>
-								</td>
-								
-							</tr>
-					</table>
-				 			
-				</div>
-				
-				<div  id="diskCostTab" style="visibility: hidden;"  class="tabcontent costTab">
-					<table>
-							
-							<tr>
-								<td>
-									<canvas id="diskCost" width="200px" height="400px"></canvas>
-								</td>
-								<td style="padding-right: 100px">
-									<div id="diskCostLegend" class="baby-box"></div>
-								</td>
-							</tr>
-					</table>
-				</div> 
-				</div>	
-						</div>
-						
-					</div>
-					
-				</div>
-			</div>
-			
-				</div>
-		</div>
-				
-				
-				 <div id="resourceTab"    style="visibility: hidden;"   class="tabcontent parentTab">	
-				 	<div class="row ">
+								<br />
+								<br />
+								<div>
+									<ul class="nav nav-pills">
+										<li id="liSummaryTab" role="presentation"
+											class=" active tablinks costTablinks"
+											onclick="getSummaryCostDetails();openTab(event,'costTab', 'costTablinks', 'summaryCostTab');"><a
+											href="#">Summary</a></li>
+										<li role="presentation" class="  tablinks costTablinks"
+											onclick="getMemoryCostDetails();openTab(event, 'costTab', 'costTablinks', 'memoryCostTab');"><a
+											href="#">Memory</a></li>
+										<li role="presentation" class=" tablinks costTablinks"
+											onclick="getCPUCostDetails();openTab(event, 'costTab', 'costTablinks', 'cpuCostTab');"><a
+											href="#">CPU</a></li>
+										<li role="presentation" class=" tablinks costTablinks"
+											onclick="getDiskCostDetails();openTab(event, 'costTab',  'costTablinks', 'diskCostTab');"><a
+											href="#">Disk</a></li>
+									</ul>
 
-			<div class="col-md-6">
-				<div class="panel panel-default">
-					<div id="panelBody" class="panel-body"  style="height:500px; width:800">
-						<div id="resourceBlock">
-							
-								<table style="width:100%">
+									<div id="summaryCostTab" class="tabcontent costTab">
+										<table>
+											<tr>
+												<td style="padding-right: 100px">
+													<canvas id="summaryCost" width="200px" height="400px"></canvas>
+												</td>
+												<td style="padding-right: 100px">
+													<div id="summaryCostLegend" class="baby-box"
+														style="width: 200px"></div>
+
+												</td>
+
+											</tr>
+										</table>
+									</div>
+
+
+									<div id="memoryCostTab" style="visibility: hidden;"
+										class="tabcontent costTab">
+										<table>
+											<tr>
+												<td style="padding-right: 100px">
+													<canvas id="memoryCost" width="200px" height="400px"></canvas>
+												</td>
+												<td style="padding-right: 100px">
+													<div id="memoryCostLegend" class="baby-box"
+														style="width: 200px"></div>
+												</td>
+
+											</tr>
+										</table>
+									</div>
+
+
+									<div id="cpuCostTab" style="visibility: hidden;"
+										class="tabcontent costTab">
+										<table>
+											<tr>
+												<td style="padding-right: 100px">
+													<canvas id="cpuCost" width="200px" height="400px"></canvas>
+												</td>
+												<td style="padding-right: 100px">
+													<div id="cpuCostLegend" class="baby-box"
+														style="width: 200px"></div>
+												</td>
+
+											</tr>
+										</table>
+
+									</div>
+
+									<div id="diskCostTab" style="visibility: hidden;"
+										class="tabcontent costTab">
+										<table>
+
+											<tr>
+												<td>
+													<canvas id="diskCost" width="200px" height="400px"></canvas>
+												</td>
+												<td style="padding-right: 100px">
+													<div id="diskCostLegend" class="baby-box"></div>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+
+		<div id="resourceTab" style="visibility: hidden;"
+			class="tabcontent parentTab">
+			<div class="row ">
+
+				<div class="col-md-6">
+					<div class="panel panel-default">
+						<div id="panelBody" class="panel-body"
+							style="height: 500px; width: 800">
+							<div id="resourceBlock">
+
+								<table style="width: 100%">
 									<tr>
-										<td style="padding-right: 20px; width:33%"><label for="OrgSelect">Organization</label>
-										<td style="padding-right: 20px; width:33%"><label for="OrgSpace">Space</label>
-										
+										<td style="padding-right: 20px; width: 33%"><label
+											for="OrgSelect">Organization</label>
+										<td style="padding-right: 20px; width: 33%"><label
+											for="OrgSpace">Space</label>
 									</tr>
 									<tr></tr>
 									<tr>
-										<td style="padding-right: 20px; width:33%"><select name="OrgSelect" id="OrgSelect"></select>
-										<td style="padding-right: 20px; width:33%"><select name="OrgSpace" id="OrgSpace"></select>
+										<td style="padding-right: 20px; width: 33%"><select
+											name="OrgSelect" id="OrgSelect"></select>
+										<td style="padding-right: 20px; width: 33%"><select
+											name="OrgSpace" id="OrgSpace"></select>
 									</tr>
-		
-								</table>
-				<div>
-				<ul class="nav nav-pills">
-				  <li id="liMemoryTab" role="presentation"  class=" active tablinks resourceTablinks" onclick="getMemoryUsageDetails();getUnusedDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'memoryTab');"><a href="#">Memory</a></li>
-				  <li role="presentation"   class="tablinks resourceTablinks" onclick="getCPUUsageDetails();getFreeCPUUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'cpuTab');expandPanelBody('panelBody');"><a href="#">CPU</a></li>
-				  <li role="presentation"  class="tablinks resourceTablinks" onclick="getDiskUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'diskTab');"><a href="#">Disk</a></li>
-				</ul>
-				
-				
-				
-				<div id="memoryTab"   class="tabcontent resourceTab">	
-				   <table><tr>
-				   			<th style="padding-right: 100px">Utilised Memory</th>
-				   			<th style="padding-right: 100px">Unutilised Memory</th>
-				   		</tr>
-				   		<tr>
-							<td style="padding-right: 100px">
-								<canvas id="memory" width="200px" height="400px"></canvas>
-							</td>
-							<td>
-							<div id="memoryLegend" class="baby-box"  style="width:200px"></div>
-							</td>
-							<td style="padding-right: 100px"> 
-								<canvas id="unusedMemory" width="200px" height="400px"></canvas>
-							</td>
-							<td>
-							<div id="unusedMemoryLegend" class="baby-box"  style="width:200px"></div>
-							</td>
-						</tr>
-				</table>
-				</div>
-				
-				
-				<div id="cpuTab" style="visibility: hidden;" class="tabcontent resourceTab">
-					<table><tr>
-								<th style="padding-right: 100px">Utilised CPU</th>
-								<th style="padding-right: 100px">Unutilised CPU</th>
-							</tr>
-							<tr>
-								<td style="padding-right: 100px">
-									<canvas id="cpu" width="200px" height="400px"></canvas>
-								</td>
-								<td>
-									<div id="cpuLegend" class="baby-box" style="width:200px"></div>
-								</td>
-								<td style="padding-right: 100px">
-									<canvas id="freeCPU" width="200px" height="400px"></canvas>
-								</td>
-								<td>
-									<div id="freeCPULegend" class="baby-box" style="width:200px"></div>
-								</td>
-							</tr>
-					</table>
-				 			
-				</div>
-				
-				<div  id="diskTab" style="visibility: hidden;"  class="tabcontent resourceTab">
-					<table>
-							<tr>
-								<th >Utilised Disk</th>
-							</tr>
-							<tr>
-								<td>
-								<canvas id="disk" width="200px" height="400px"></canvas>
-								<div id="diskLegend" class="baby-box"></div>
-								
-								</td>
-							</tr>
-					</table>
-				</div>
-				</div>	
-						</div>
-						
-					</div>
-					
-				</div>
-			</div>
-			
-				</div>
-				</div>
-		
-				
-		</div>
-	
-	
 
+								</table>
+								<div>
+									<ul class="nav nav-pills">
+										<li id="liMemoryTab" role="presentation"
+											class=" active tablinks resourceTablinks"
+											onclick="getMemoryUsageDetails();getUnusedDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'memoryTab');"><a
+											href="#">Memory</a></li>
+										<li role="presentation" class="tablinks resourceTablinks"
+											onclick="getCPUUsageDetails();getFreeCPUUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'cpuTab');expandPanelBody('panelBody');"><a
+											href="#">CPU</a></li>
+										<li role="presentation" class="tablinks resourceTablinks"
+											onclick="getDiskUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'diskTab');"><a
+											href="#">Disk</a></li>
+									</ul>
+
+
+
+									<div id="memoryTab" class="tabcontent resourceTab">
+										<table>
+											<tr>
+												<th style="padding-right: 100px">Utilised Memory</th>
+												<th style="padding-right: 100px">Unutilised Memory</th>
+											</tr>
+											<tr>
+												<td style="padding-right: 100px">
+													<canvas id="memory" width="200px" height="400px"></canvas>
+												</td>
+												<td>
+													<div id="memoryLegend" class="baby-box"
+														style="width: 200px"></div>
+												</td>
+												<td style="padding-right: 100px">
+													<canvas id="unusedMemory" width="200px" height="400px"></canvas>
+												</td>
+												<td>
+													<div id="unusedMemoryLegend" class="baby-box"
+														style="width: 200px"></div>
+												</td>
+											</tr>
+										</table>
+									</div>
+
+
+									<div id="cpuTab" style="visibility: hidden;"
+										class="tabcontent resourceTab">
+										<table>
+											<tr>
+												<th style="padding-right: 100px">Utilised CPU</th>
+												<th style="padding-right: 100px">Unutilised CPU</th>
+											</tr>
+											<tr>
+												<td style="padding-right: 100px">
+													<canvas id="cpu" width="200px" height="400px"></canvas>
+												</td>
+												<td>
+													<div id="cpuLegend" class="baby-box" style="width: 200px"></div>
+												</td>
+												<td style="padding-right: 100px">
+													<canvas id="freeCPU" width="200px" height="400px"></canvas>
+												</td>
+												<td>
+													<div id="freeCPULegend" class="baby-box"
+														style="width: 200px"></div>
+												</td>
+											</tr>
+										</table>
+
+									</div>
+
+									<div id="diskTab" style="visibility: hidden;"
+										class="tabcontent resourceTab">
+										<table>
+											<tr>
+												<th>Utilised Disk</th>
+											</tr>
+											<tr>
+												<td>
+													<canvas id="disk" width="200px" height="400px"></canvas>
+													<div id="diskLegend" class="baby-box"></div>
+
+												</td>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
 
 </body>
 </html>

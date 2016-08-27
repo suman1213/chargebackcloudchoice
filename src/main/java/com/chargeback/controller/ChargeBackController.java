@@ -108,27 +108,27 @@ public class ChargeBackController {
 			usedResourceFunction = summary -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.getSummary())).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(usageRecord -> usageRecord.getOrgName()
-					.concat(" ").concat(String.valueOf(usageRecord.getSummary()))).collect(Collectors.toList());
+					.concat(" $").concat(String.valueOf(usageRecord.getSummary()))).collect(Collectors.toList());
 
 		} else if (resourceType.equals("MEM")) {
 			usedResourceFunction = usedMemory -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.getMemory())).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
-					usageRecord -> usageRecord.getOrgName().concat(" ").concat(String.valueOf(usageRecord.getMemory())))
+					usageRecord -> usageRecord.getOrgName().concat(" $").concat(String.valueOf(usageRecord.getMemory())))
 					.collect(Collectors.toList());
 
 		} else if (resourceType.equals("CPU")) {
 			usedResourceFunction = usedCPU -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.getCpu())).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
-					usageRecord -> usageRecord.getOrgName().concat(" ").concat(String.valueOf(usageRecord.getCpu())))
+					usageRecord -> usageRecord.getOrgName().concat(" $").concat(String.valueOf(usageRecord.getCpu())))
 					.collect(Collectors.toList());
 
 		} else if (resourceType.equals("DISK")) {
 			usedResourceFunction = usedCPU -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.getDisk())).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
-					usageRecord -> usageRecord.getOrgName().concat(" ").concat(String.valueOf(usageRecord.getDisk())))
+					usageRecord -> usageRecord.getOrgName().concat(" $").concat(String.valueOf(usageRecord.getDisk())))
 					.collect(Collectors.toList());
 		} else {
 			throw new RuntimeException("Please Select Resource Type from : CPU, DISK, MEM");
