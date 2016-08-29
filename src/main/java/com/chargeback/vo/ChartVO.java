@@ -12,5 +12,4 @@ public class ChartVO {
 		this.label = label;
 		this.data = data;
 	}
-
 }

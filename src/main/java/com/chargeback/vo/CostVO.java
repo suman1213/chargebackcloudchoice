@@ -1,7 +1,6 @@
 package com.chargeback.vo;
 
 public class CostVO {
-
 	
 	String startDate;
 	String endDate;
@@ -59,6 +58,5 @@ public class CostVO {
 	public void setDisk(String disk) {
 		this.disk = disk;
 	}
-	
 	
 }

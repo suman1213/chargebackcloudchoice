@@ -4,5 +4,8 @@ applications:
   memory: 512M
   random-route: true
   host: chargeback-micro
-  
-path: target/chargeback-0.0.1-SNAPSHOT.jar
+  path: target/chargeback-0.0.1-SNAPSHOT.jar
+  services:
+    - service-registry
+  env:
+    SPRING_PROFILES_ACTIVE: cloud
