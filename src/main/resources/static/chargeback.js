@@ -390,10 +390,10 @@ var getlabelsArray = function(labeList) {
 
 /* Utility Function to create an Integer Array*/
 
-var getdataArray = function(data, chartType) {
+var getdataArray = function(data, chartType, id) {
 	var dataArray = [];
 	var divisor=1;
-	if(chartType==='bar'){
+	if(chartType==='bar' && id==='disk'){
 		divisor = 1024*1024;
 	}
 	for (var i = 0; i < data.length; i++) {
@@ -416,7 +416,7 @@ var populateChartDetails = function(data, id, chartType, utilizationBy) {
 	var chartData = {
 		labels : getlabelsArray(data.label),
 		datasets : [ {
-			data : getdataArray(data.data, chartType),
+			data : getdataArray(data.data, chartType, id),
 			backgroundColor : colorArray,
 			hoverBackgroundColor : colorArray
 		} ]
