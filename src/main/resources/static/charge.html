@@ -203,10 +203,10 @@
 									<ul class="nav nav-pills">
 										<li id="liMemoryTab" role="presentation"
 											class=" active tablinks resourceTablinks"
-											onclick="getMemoryUsageDetails();getUnusedDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'memoryTab');"><a
+											onclick="getMemoryUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'memoryTab');"><a
 											href="#">Memory</a></li>
 										<li role="presentation" class="tablinks resourceTablinks"
-											onclick="getCPUUsageDetails();getFreeCPUUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'cpuTab');expandPanelBody('panelBody');"><a
+											onclick="getCPUUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'cpuTab');expandPanelBody('panelBody');"><a
 											href="#">CPU</a></li>
 										<li role="presentation" class="tablinks resourceTablinks"
 											onclick="getDiskUsageDetails();openTab(event, 'resourceTab', 'resourceTablinks', 'diskTab');"><a
@@ -219,7 +219,6 @@
 										<table>
 											<tr>
 												<th style="padding-right: 100px">Utilised Memory</th>
-												<th style="padding-right: 100px">Unutilised Memory</th>
 											</tr>
 											<tr>
 												<td style="padding-right: 100px">
@@ -246,7 +245,6 @@
 										<table>
 											<tr>
 												<th style="padding-right: 100px">Utilised CPU</th>
-												<th style="padding-right: 100px">Unutilised CPU</th>
 											</tr>
 											<tr>
 												<td style="padding-right: 100px">
