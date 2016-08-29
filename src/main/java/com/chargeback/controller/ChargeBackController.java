@@ -12,6 +12,7 @@ import static com.chargeback.constants.ChargeBackConstants.UNUSED;
 import static com.chargeback.constants.ChargeBackConstants.UNUTILISED;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -58,8 +59,6 @@ public class ChargeBackController {
 	
 	
 	
-	private static final String INSTANCE_SUMMARY_URL = "http://localhost:8080/chargeback/getResourceDetailsSummary";
-	// TODO :: Need to fetch this from Eureka Server Client Id by just giving application name 
 	private static final String INSTANCE_METRICS_URL = "http://chargeback-api.cglean.com/metrics/getInstanceMetrics";
 	private static final String FREERESOURRCE_URL = "http://chargeback-api.cglean.com/metrics/getFreeResource";
 	
@@ -130,6 +129,7 @@ public class ChargeBackController {
 	private ChartVO getSummaryVal(@PathVariable String infoType, @PathVariable String resourceType, @PathVariable final String startDate, @PathVariable final String endDate)
 			throws ParseException {
 
+		DecimalFormat decimalFormat = new DecimalFormat("#.##");
 		final List<PriceValueSummary> priceValueSummaryList = getSummary(startDate,endDate);
 		Function<List<PriceValueSummary>, List<String>> usedResourceFunction = null;
 		Function<List<PriceValueSummary>, List<String>> appLabelFunction = null;
@@ -137,27 +137,27 @@ public class ChargeBackController {
 			usedResourceFunction = summary -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.summary)).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(usageRecord -> usageRecord.orgName
-					.concat(" $").concat(String.valueOf(usageRecord.summary))).collect(Collectors.toList());
+					.concat(" $").concat(decimalFormat.format(usageRecord.summary))).collect(Collectors.toList());
 
 		} else if (resourceType.equals(MEMORY)) {
 			usedResourceFunction = usedMemory -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.memory)).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
-					usageRecord -> usageRecord.orgName.concat(" $").concat(String.valueOf(usageRecord.memory)))
+					usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.memory)))
 					.collect(Collectors.toList());
 
 		} else if (resourceType.equals(CPU)) {
 			usedResourceFunction = usedCPU -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.cpu)).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
-					usageRecord -> usageRecord.orgName.concat(" $").concat(String.valueOf(usageRecord.cpu)))
+					usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.cpu)))
 					.collect(Collectors.toList());
 
 		} else if (resourceType.equals(DISK)) {
 			usedResourceFunction = usedCPU -> priceValueSummaryList.stream()
 					.map(usageRecord -> String.valueOf(usageRecord.disk)).collect(Collectors.toList());
 			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
-					usageRecord -> usageRecord.orgName.concat(" $").concat(String.valueOf(usageRecord.disk)))
+					usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.disk)))
 					.collect(Collectors.toList());
 		} else {
 			throw new RuntimeException("Please Select Resource Type from : CPU, DISK, MEM");
