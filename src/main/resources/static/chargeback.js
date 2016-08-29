@@ -214,14 +214,12 @@ var displayBasedOnTab = function(name){
 		
 	case "memoryTab":
 		getMemoryUsageDetails();
-		getUnusedDetails();
 		break;
 	case "diskTab":
 		getDiskUsageDetails();
 		break;
 	case "cpuTab":
 		getCPUUsageDetails();
-		getFreeCPUUsageDetails();
 		break;
 	}
 
