@@ -401,7 +401,20 @@ var getdataArray = function(data, chartType, id) {
 };
 
 
-
+var getClientName = function(){
+	
+	$.ajax({
+		url : "getClient",
+		success : function(data) {
+			console.log(" Org List::" + data);
+			if(data=='Kroger'){
+				document.getElementById("clientImg").src="Kroger.png";
+			}else{
+				document.getElementById("clientImg").src="NBCU.jpg";
+			}
+		}
+	});
+}
 
 /* Function to populate chart Details */
 var populateChartDetails = function(data, id, chartType, utilizationBy) {

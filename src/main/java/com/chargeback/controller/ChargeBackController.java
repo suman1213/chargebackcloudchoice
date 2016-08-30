@@ -69,6 +69,13 @@ public class ChargeBackController {
 
 	@Autowired  private RestTemplate restTemplate; 
 	
+	
+	
+	@RequestMapping(value="/getClient", method=RequestMethod.GET, produces=MediaType.TEXT_PLAIN_VALUE)
+	public String getClientName(){
+		return System.getenv("CLIENT_LOGO");
+		
+	}
 	private List<PriceValueSummary> getSummary(final String startDate, final String endDate) throws ParseException {
 		String url = INFRA_API;
 		url = url + "?" +"start=" + startDate + "&" + "end=" + endDate; 
