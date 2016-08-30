@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-starter-parent</artifactId>
-		<version>Angel.SR6</version>
+		<version>Brixton.SR5</version>
 	</parent>
 
 	<properties>

@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +58,6 @@ public class ChargeBackController {
 	@Autowired
 	private ChargeBackApiClient chargeBackApiClient;
 	*/
-	
-	
-	
 	private static final String INSTANCE_METRICS_URL = "http://chargeback-api.cglean.com/metrics/getInstanceMetrics";
 	private static final String FREERESOURRCE_URL = "http://chargeback-api.cglean.com/metrics/getFreeResource";
 	
@@ -80,7 +79,7 @@ public class ChargeBackController {
 		String url = INFRA_API;
 		url = url + "?" +"start=" + startDate + "&" + "end=" + endDate; 
 		
-		final ResponseEntity<CostVO> infraApiResponse = restTemplate.exchange(INFRA_API, HttpMethod.GET, HttpEntity.EMPTY,
+		final ResponseEntity<CostVO> infraApiResponse = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<CostVO>() {
 				});
 		final CostVO costVO = infraApiResponse.getBody();
@@ -133,44 +132,90 @@ public class ChargeBackController {
 	}
 
 	@RequestMapping(value = GET_COST_DETAILS, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	private ChartVO getSummaryVal(@PathVariable String infoType, @PathVariable String resourceType, @PathVariable final String startDate, @PathVariable final String endDate)
+	private ChartVO getSummaryVal(@PathVariable String infoType, @PathVariable String resourceType, 
+			@PathVariable final String startDate, @PathVariable final String endDate, HttpSession session)
 			throws ParseException {
 
+		if(null!=session && null!=session.getAttribute("dollarSplit" + startDate + endDate +infoType + resourceType)){
+			return ((ChartVO)session.getAttribute("dollarSplit" + startDate + endDate +infoType + resourceType));
+		}
+	
+		ChartVO chartVO = null;
 		DecimalFormat decimalFormat = new DecimalFormat("#.##");
 		final List<PriceValueSummary> priceValueSummaryList = getSummary(startDate,endDate);
-		Function<List<PriceValueSummary>, List<String>> usedResourceFunction = null;
-		Function<List<PriceValueSummary>, List<String>> appLabelFunction = null;
+		Function<List<PriceValueSummary>, List<String>> summaryfunction = getSummaryFunction(priceValueSummaryList);
+		Function<List<PriceValueSummary>, List<String>> diskfunction= getDiskFunction(priceValueSummaryList);;
+		Function<List<PriceValueSummary>, List<String>> cpufunction= getCPUFunction(priceValueSummaryList);
+		Function<List<PriceValueSummary>, List<String>> memoryfunction = getMemoryFunction(priceValueSummaryList);
+
+		Function<List<PriceValueSummary>, List<String>>  summaryLabel = getSummaryLabelFunction(decimalFormat, priceValueSummaryList);
+		Function<List<PriceValueSummary>, List<String>> memoryLabel = getMemoryLabelFunction(decimalFormat, priceValueSummaryList);;
+		Function<List<PriceValueSummary>, List<String>> cpuLabel = getCPULabelFunction(decimalFormat, priceValueSummaryList);
+		Function<List<PriceValueSummary>, List<String>> diskLabel = getDiskLabelFunction(decimalFormat, priceValueSummaryList);
+
 		if (resourceType.equals(SUMMARY)) {
-			usedResourceFunction = summary -> priceValueSummaryList.stream()
-					.map(usageRecord -> String.valueOf(usageRecord.summary)).collect(Collectors.toList());
-			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(usageRecord -> usageRecord.orgName
-					.concat(" $").concat(decimalFormat.format(usageRecord.summary))).collect(Collectors.toList());
-
+			chartVO = getParameterizedUsageDetails(priceValueSummaryList, summaryfunction, summaryLabel);
 		} else if (resourceType.equals(MEMORY)) {
-			usedResourceFunction = usedMemory -> priceValueSummaryList.stream()
-					.map(usageRecord -> String.valueOf(usageRecord.memory)).collect(Collectors.toList());
-			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
-					usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.memory)))
-					.collect(Collectors.toList());
-
+			chartVO = getParameterizedUsageDetails(priceValueSummaryList, memoryfunction, memoryLabel);
 		} else if (resourceType.equals(CPU)) {
-			usedResourceFunction = usedCPU -> priceValueSummaryList.stream()
-					.map(usageRecord -> String.valueOf(usageRecord.cpu)).collect(Collectors.toList());
-			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
-					usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.cpu)))
-					.collect(Collectors.toList());
-
+			chartVO=getParameterizedUsageDetails(priceValueSummaryList, cpufunction, cpuLabel);
 		} else if (resourceType.equals(DISK)) {
-			usedResourceFunction = usedCPU -> priceValueSummaryList.stream()
-					.map(usageRecord -> String.valueOf(usageRecord.disk)).collect(Collectors.toList());
-			appLabelFunction = appLabel -> priceValueSummaryList.stream().map(
-					usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.disk)))
-					.collect(Collectors.toList());
+			chartVO=getParameterizedUsageDetails(priceValueSummaryList, diskfunction, diskLabel);
 		} else {
 			throw new RuntimeException("Please Select Resource Type from : CPU, DISK, MEM");
 		}
-		return getParameterizedUsageDetails(priceValueSummaryList, usedResourceFunction, appLabelFunction);
+		session.setAttribute("dollarSplit" + startDate + endDate + infoType + SUMMARY, getParameterizedUsageDetails(priceValueSummaryList, summaryfunction, summaryLabel));
+		session.setAttribute("dollarSplit" + startDate + endDate + infoType + MEMORY, getParameterizedUsageDetails(priceValueSummaryList, memoryfunction, memoryLabel));
+		session.setAttribute("dollarSplit" + startDate + endDate + infoType + CPU, getParameterizedUsageDetails(priceValueSummaryList, cpufunction, cpuLabel));
+		session.setAttribute("dollarSplit" + startDate + endDate + infoType + DISK, getParameterizedUsageDetails(priceValueSummaryList, diskfunction, diskLabel));
 
+		return chartVO;
+
+	}
+	private Function<List<PriceValueSummary>, List<String>> getDiskLabelFunction(DecimalFormat decimalFormat,
+			final List<PriceValueSummary> priceValueSummaryList) {
+		return appLabel -> priceValueSummaryList.stream().map(
+				usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.disk)))
+				.collect(Collectors.toList());
+	}
+	private Function<List<PriceValueSummary>, List<String>> getDiskFunction(
+			final List<PriceValueSummary> priceValueSummaryList) {
+		return usedCPU -> priceValueSummaryList.stream()
+				.map(usageRecord -> String.valueOf(usageRecord.disk)).collect(Collectors.toList());
+	}
+	private Function<List<PriceValueSummary>, List<String>> getCPULabelFunction(DecimalFormat decimalFormat,
+			final List<PriceValueSummary> priceValueSummaryList) {
+		return appLabel -> priceValueSummaryList.stream().map(
+				usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.cpu)))
+				.collect(Collectors.toList());
+	}
+	private Function<List<PriceValueSummary>, List<String>> getCPUFunction(
+			final List<PriceValueSummary> priceValueSummaryList) {
+		return usedCPU -> priceValueSummaryList.stream()
+				.map(usageRecord -> String.valueOf(usageRecord.cpu)).collect(Collectors.toList());
+	}
+	private Function<List<PriceValueSummary>, List<String>> getMemoryLabelFunction(DecimalFormat decimalFormat,
+			final List<PriceValueSummary> priceValueSummaryList) {
+		return appLabel -> priceValueSummaryList.stream().map(
+				usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.memory)))
+				.collect(Collectors.toList());
+	}
+	private Function<List<PriceValueSummary>, List<String>> getMemoryFunction(
+			final List<PriceValueSummary> priceValueSummaryList) {
+		return usedMemory -> priceValueSummaryList.stream()
+				.map(usageRecord -> String.valueOf(usageRecord.memory)).collect(Collectors.toList());
+	}
+	private Function<List<PriceValueSummary>, List<String>> getSummaryLabelFunction(DecimalFormat decimalFormat,
+			final List<PriceValueSummary> priceValueSummaryList) {
+		return appLabel -> priceValueSummaryList.stream().map(usageRecord -> usageRecord.orgName
+				.concat(" $").concat(decimalFormat.format(usageRecord.summary))).collect(Collectors.toList());
+	}
+	private Function<List<PriceValueSummary>, List<String>> getSummaryFunction(
+			final List<PriceValueSummary> priceValueSummaryList) {
+		Function<List<PriceValueSummary>, List<String>> summaryfunction;
+		summaryfunction = summary -> priceValueSummaryList.stream()
+				.map(usageRecord -> String.valueOf(usageRecord.summary)).collect(Collectors.toList());
+		return summaryfunction;
 	}
 
 	/**
