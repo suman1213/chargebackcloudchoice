@@ -287,7 +287,7 @@ var getDiskCostDetails = function() {
 	$.ajax({
 		url : "getCostDetails/COST/DISK/"  + start + "/" + end,
 		success : function(data) {
-			populateChartDetails(data, "diskCost", 'bar',"cost");
+			populateChartDetails(data, "diskCost", 'pie',"cost");
 		}
 	});
 
@@ -369,7 +369,7 @@ var getDiskUsageDetails = function() {
 	$.ajax({
 		url : "getResourceDetails/USED/DISK/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
-			populateChartDetails(data, "disk", 'bar');
+			populateChartDetails(data, "disk", 'pie');
 		}
 	});
 
