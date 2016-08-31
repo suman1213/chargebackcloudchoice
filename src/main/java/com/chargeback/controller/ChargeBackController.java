@@ -132,7 +132,7 @@ public class ChargeBackController {
 	}
 
 	@RequestMapping(value = GET_COST_DETAILS, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	private ChartVO getSummaryVal(@PathVariable String infoType, @PathVariable String resourceType, 
+	public ChartVO getSummaryVal(@PathVariable String infoType, @PathVariable String resourceType, 
 			@PathVariable final String startDate, @PathVariable final String endDate, HttpSession session)
 			throws ParseException {
 
