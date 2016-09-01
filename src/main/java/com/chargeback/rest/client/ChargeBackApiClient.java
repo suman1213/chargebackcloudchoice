@@ -12,7 +12,7 @@ import com.chargeback.vo.UsageRecord;
 
 import static com.chargeback.constants.ChargeBackConstants.*;
 import static com.chargeback.constants.ServiceNameConstants.*;
-@FeignClient(CHARGEBACK_API_SERVICE)
+@FeignClient("CHARGEBACK-API-SERVICE")
 public interface  ChargeBackApiClient {
 
 	@RequestMapping(value = "/getInstanceMetrics", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) 

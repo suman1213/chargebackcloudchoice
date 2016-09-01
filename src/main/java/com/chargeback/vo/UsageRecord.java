@@ -82,8 +82,4 @@ public class UsageRecord {
 		this.instanceIndex = instanceIndex;
 	}
 	
-	
-	
-	
-	
 }

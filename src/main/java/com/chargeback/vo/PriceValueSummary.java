@@ -5,7 +5,7 @@ package com.chargeback.vo;
  * @author amit
  *
  */
-public class PriceValueSummary {
+public final class PriceValueSummary {
 
 	public final  double summary;
 	
@@ -17,7 +17,7 @@ public class PriceValueSummary {
 	
 	public final String orgName;
 
-	public PriceValueSummary(double summary, double cpu, double disk, double memory, String orgName) {
+	public PriceValueSummary(final double summary, final double cpu, final double disk, final double memory, final String orgName) {
 		this.summary = summary;
 		this.cpu = cpu;
 		this.disk = disk;

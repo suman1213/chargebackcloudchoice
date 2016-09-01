@@ -8,6 +8,8 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import feign.Logger;
+
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableFeignClients
 @EnableEurekaClient
@@ -22,4 +24,9 @@ public class ChargebackMicroApplication {
 		SpringApplication.run(ChargebackMicroApplication.class, args);
 	}
 
+	
+	@Bean
+	public Logger.Level feignLoggerLevel() {
+	return Logger.Level.FULL;
+	}
 }
