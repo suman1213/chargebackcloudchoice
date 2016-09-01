@@ -96,26 +96,35 @@ color:#fff;background-color:#99ccff;
        float:right;
 }
 
-div#spinner
+ div#spinner
 {
-    display: none;
-    width:100px;
-    height: 100px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
+     display: none; 
+     width:100px;
+    height: 100px; 
+    position: fixed; 
+     top: 83%;
+    left: 25%; 
     text-align:center;
     margin-left: -50px;
     margin-top: -100px;
     z-index:2;
     overflow: auto;
-}    
+ }   
+
+
+.ajax-loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -32px; /* -1 * image width / 2 */
+  margin-top: -32px; /* -1 * image height / 2 */
+}
 </style>
  
   
  
 </head>
-<body onload="getOrganisations();getClientName();">
+<body onload="getOrganisations();getClientName();periodChange();">
        <nav class="navbar navbar-inverse navbar-fixed-top"  role="navigation">
               <div class="container" >
                      <!-- Brand and toggle get grouped for better mobile display -->
@@ -140,30 +149,41 @@ div#spinner
               </div>
        </nav>
       
+      
        <div class="container"  role="main" style="height:800px">
-       <div id="spinner">
-    		<img src="ajax-loader.gif" alt="Loading..."/>
+         
+	        <div id="spinner">
+    		<img src="ajax-loader.gif" alt="Loading..." />
 		</div>
+    	
+		
               <div  class="row ">
                            <div class="page-header">
                                   <p>&nbsp;</p>
                                   <!-- <h1> Cost by Application</h1> -->
                            </div>
               </div>
+              
+              
+              
+              <div>
+              
+               
               <ul class="nav nav-pills">
                              <li role="presentation"  class=" active tablinks parentTablinks"  onclick="openTab(event,'parentTab', 'parentTablinks', 'costTab');defaultSelectedTab('summaryCostTab','costTab','costTablinks','liSummaryTab');"><a href="#">Cost by Application</a></li>
                                <li role="presentation"  class="  tablinks parentTablinks" onclick="openTab(event,'parentTab', 'parentTablinks','resourceTab');defaultSelectedTab('memoryTab','resourceTab','resourceTablinks','liMemoryTab');" ><a href="#">Utilization by Application</a></li>
                              
               </ul>
-             
+              
+              
+              
               <div id="costTab"   class="tabcontent parentTab" style="display:block">   
                               <div class="row ">
- 
+ 	
                      <div class="col-md-6">
                            <div class="panel panel-default">
                                   <div class="panel-body" style="height:500px">
-                                         <div id="costBlock">
-
+   
 								<table style="width: 100%">
 									<tr>
 										<td style="padding-right: 20px; width: 33%"><label
@@ -187,7 +207,7 @@ div#spinner
                              <li role="presentation"   class=" tablinks costTablinks" onclick="getCPUCostDetails();openTab(event, 'costTab', 'costTablinks', 'cpuCostTab');"><a href="#">CPU</a></li>
                              <li role="presentation"  class=" tablinks costTablinks" onclick="getDiskCostDetails();openTab(event, 'costTab',  'costTablinks', 'diskCostTab');"><a href="#">Disk</a></li>
                            </ul>
-                          
+                         
                            <div id="summaryCostTab"   class="tabcontent costTab">
                               <table>
                                          <tr>
@@ -239,7 +259,7 @@ div#spinner
                                   <table>
                                                
                                                 <tr>
-                                                       <td>
+                                                       <td style="padding-right: 100px">
                                                               <canvas id="diskCost" width="200px" height="400px"></canvas>
                                                        </td>
                                                        <td style="padding-right: 100px">
@@ -279,6 +299,9 @@ div#spinner
                                                                      <td style="padding-right: 20px; width:33%"><select name="OrgSelect" id="OrgSelect"></select>
                                                                      <td style="padding-right: 20px; width:33%"><select name="OrgSpace" id="OrgSpace"></select>
                                                               </tr>
+                                                              <tr>
+                                                             <td> &nbsp;</td>
+                                                              </tr>
              
                                                        </table>
                            <div>
@@ -301,12 +324,12 @@ div#spinner
                                                 <td>
                                                 <div id="memoryLegend" class="baby-box"  style="width:200px"></div>
                                                 </td>
-                                                <td style="padding-right: 100px">
+                                               <!--  <td style="padding-right: 100px">
                                                        <canvas id="unusedMemory" width="200px" height="400px"></canvas>
                                                 </td>
                                                 <td>
                                                 <div id="unusedMemoryLegend" class="baby-box"  style="width:200px"></div>
-                                                </td>
+                                                </td> -->
                                          </tr>
                            </table>
                            </div>
@@ -323,12 +346,12 @@ div#spinner
                                                        <td>
                                                               <div id="cpuLegend" class="baby-box" style="width:200px"></div>
                                                        </td>
-                                                       <td style="padding-right: 100px">
+                                                      <!--  <td style="padding-right: 100px">
                                                               <canvas id="freeCPU" width="200px" height="400px"></canvas>
                                                        </td>
                                                        <td>
                                                               <div id="freeCPULegend" class="baby-box" style="width:200px"></div>
-                                                       </td>
+                                                       </td> -->
                                                 </tr>
                                   </table>
                                               
@@ -337,10 +360,10 @@ div#spinner
                            <div  id="diskTab" style="visibility: hidden;"  class="tabcontent resourceTab">
                                   <table>
                                                 <tr>
-                                                       <th >Utilised Disk</th>
+                                                       <th style="padding-right: 100px">Utilised Disk</th>
                                                 </tr>
                                                 <tr>
-                                                       <td>
+                                                       <td style="padding-right: 100px">
                                                               <canvas id="disk" width="200px" height="400px"></canvas>
                                                        </td>
                                                        <td>
@@ -360,9 +383,10 @@ div#spinner
                     
                            </div>
                            </div>
+                          </div>
              
                           
-              </div>
+              <!-- </div> -->
       
       
  

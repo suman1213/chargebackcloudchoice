@@ -164,7 +164,7 @@ var populateOrgDropDown = function(vals){
 
 var clearAllCharts = function(){
 	
-	var vals = ["cpu", "freecpu","memory", "unusedMemory", "disk","summary"];
+	var vals = ["summaryCost","memoryCost", "cpuCost","diskCost", "memory", "cpu","disk"];
 	$.each(vals, function(value, index) {
 		if(h.getItem(value) != undefined){
 			h.getItem(value).destroy();
@@ -184,47 +184,61 @@ var populateSpaceDropDown = function(vals){
 	 $("#OrgSpace").change(function(){
 			var selectedSpace = $( "#OrgSpace option:selected" ).text();
 			clearAllCharts();
-			console.log(selectedOrg);
 			displayBasedOnTab(selectedTab);
 			 
 		 });
 	 
 	displayBasedOnTab(selectedTab);
+	
 }
+
 
 var displayBasedOnTab = function(name){
 
 	console.log(name);
 	switch(name){
 	case "summaryCostTab":
+		clearAllCharts();
 		getSummaryCostDetails();
 		break;
 		
 	case "memoryCostTab":
+		clearAllCharts();
 		getMemoryCostDetails();
 		break;
 		
 	case "cpuCostTab":
+		clearAllCharts();
 		getCPUCostDetails();
 		break;
 		
 	case "diskCostTab":
+		clearAllCharts();
 		getDiskCostDetails();
 		break;
 		
 	case "memoryTab":
+		clearAllCharts();
 		getMemoryUsageDetails();
 		break;
 	case "diskTab":
+		clearAllCharts();
 		getDiskUsageDetails();
 		break;
 	case "cpuTab":
+		clearAllCharts();
 		getCPUUsageDetails();
 		break;
 	}
 
 }
 
+var periodChange = function(){
+	$("#PreiodSelect").change(function(){
+		displayBasedOnTab(selectedTab);
+		 
+	 });
+}
 var getStartDate = function(){
 	if($("#PreiodSelect option:selected").text()==="Yesterday"){
 		return  getYesterdaysDate();
@@ -234,6 +248,10 @@ var getStartDate = function(){
 	}else{
 		return  getYesterdaysDate();
 	}
+	
+	
+	 
+	
 }
 
 
