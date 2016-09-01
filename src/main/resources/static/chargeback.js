@@ -230,7 +230,7 @@ var getStartDate = function(){
 		return  getYesterdaysDate();
 		var endDate = getYesterdaysDate();
 	}else if($("#PreiodSelect option:selected").text()==="Month"){
-		return  moment().startOf('month').format("YYYY-MM-DD");
+		return  moment().subtract(1,'months').startOf('month').format("YYYY-MM-DD");
 	}else{
 		return  getYesterdaysDate();
 	}
@@ -238,15 +238,23 @@ var getStartDate = function(){
 
 
 var getEndDate = function(){
-	return  getYesterdaysDate();
+	
+	if($("#PreiodSelect option:selected").text()==="Yesterday"){
+		return getYesterdaysDate();
+	}else{
+	return moment().subtract(1,'months').endOf('month').format("YYYY-MM-DD");
+	}
 }
 
 var getSummaryCostDetails = function() {
 	var start = getStartDate();
 	var end = getEndDate();
+	console.log("End Date ::" + end)
+	$('#spinner').show();
 	$.ajax({
 		url : "getCostDetails/COST/SUMMARY/" + start + "/" + end,
 		success : function(data) {
+			 $('#spinner').hide();
 			populateChartDetails(data, "summaryCost", 'pie',"cost");
 			
 		}
@@ -258,9 +266,11 @@ var getSummaryCostDetails = function() {
 var getMemoryCostDetails = function() {
 	var start = getStartDate();
 	var end = getEndDate();
+	$('#spinner').show();
 	$.ajax({
 		url : "getCostDetails/COST/MEM/"  + start + "/" + end,
 		success : function(data) {
+			 $('#spinner').hide();
 			populateChartDetails(data, "memoryCost", 'pie',"cost");
 		}
 	});
@@ -270,9 +280,11 @@ var getMemoryCostDetails = function() {
 var getCPUCostDetails = function() {
 	var start = getStartDate();
 	var end = getEndDate();
+	$('#spinner').show();
 	$.ajax({
 		url : "getCostDetails/COST/CPU/"  + start + "/" + end,
 		success : function(data) {
+			 $('#spinner').hide();
 			populateChartDetails(data, "cpuCost", 'pie',"cost");
 		}
 	});
@@ -284,9 +296,12 @@ var getCPUCostDetails = function() {
 var getDiskCostDetails = function() {
 	var start = getStartDate();
 	var end = getEndDate();
+	$('#spinner').show();
+
 	$.ajax({
 		url : "getCostDetails/COST/DISK/"  + start + "/" + end,
 		success : function(data) {
+			$('#spinner').hide();
 			populateChartDetails(data, "diskCost", 'pie',"cost");
 		}
 	});
@@ -300,9 +315,13 @@ var getMemoryUsageDetails = function() {
 	if($( "#OrgSpace option:selected" ).text() ==="" || $( "#OrgSpace option:selected" ).text() === undefined || $( "#OrgSpace option:selected" ).text() === null){
 		return;
 	}
+	$('#spinner').show();
+
 	$.ajax({
 		url : "getResourceDetails/USED/MEM/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
+			$('#spinner').hide();
+
 			populateChartDetails(data, "memory", 'pie');
 		}
 	});
@@ -317,9 +336,13 @@ var getUnusedDetails = function() {
 	if($( "#OrgSpace option:selected" ).text() ==="" || $( "#OrgSpace option:selected" ).text() === undefined || $( "#OrgSpace option:selected" ).text() === null){
 		return;
 	}
+	$('#spinner').show();
+
 	$.ajax({
 		url : "getResourceDetails/UNUSED/MEM/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
+			$('#spinner').hide();
+
 			populateChartDetails(data, "unusedMemory",'pie');
 		}
 	});
@@ -332,9 +355,12 @@ var getCPUUsageDetails = function() {
 	if($( "#OrgSpace option:selected" ).text() ==="" || $( "#OrgSpace option:selected" ).text() === undefined || $( "#OrgSpace option:selected" ).text() === null){
 		return;
 	}
+	$('#spinner').show();
+
 	$.ajax({
 		url : "getResourceDetails/USED/CPU/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
+			$('#spinner').hide();
 			populateChartDetails(data, "cpu", 'pie');
 		}
 	});
@@ -348,9 +374,12 @@ var getFreeCPUUsageDetails = function() {
 	if($( "#OrgSpace option:selected" ).text() ==="" || $( "#OrgSpace option:selected" ).text() === undefined || $( "#OrgSpace option:selected" ).text() === null){
 		return;
 	}
+	$('#spinner').show();
+
 	$.ajax({
 		url : "getResourceDetails/UNUSED/CPU/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
+			$('#spinner').hide();
 			populateChartDetails(data, "freeCPU", 'pie');
 		}
 	});
@@ -366,9 +395,13 @@ var getDiskUsageDetails = function() {
 	if($( "#OrgSpace option:selected" ).text() ==="" || $( "#OrgSpace option:selected" ).text() === undefined || $( "#OrgSpace option:selected" ).text() === null){
 		return;
 	}
+	$('#spinner').show();
+
 	$.ajax({
 		url : "getResourceDetails/USED/DISK/" + $( "#OrgSelect option:selected" ).text() + "/" +$( "#OrgSpace option:selected" ).text(),
 		success : function(data) {
+			$('#spinner').hide();
+
 			populateChartDetails(data, "disk", 'pie');
 		}
 	});

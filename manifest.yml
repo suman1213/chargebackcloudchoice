@@ -1,9 +1,9 @@
 ---
 applications:
-- name: chargebackMicro
-  memory: 512M
+- name: chargebackMicroM
+  memory: 1024M
   random-route: true
-  host: chargeback-micro
+  host: chargeback-micro-new
   path: target/chargeback-0.0.1-SNAPSHOT.jar
   services:
     - service-registry

@@ -95,8 +95,24 @@ color:#fff;background-color:#99ccff;
 .img_aligment{
        float:right;
 }
+
+div#spinner
+{
+    display: none;
+    width:100px;
+    height: 100px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    text-align:center;
+    margin-left: -50px;
+    margin-top: -100px;
+    z-index:2;
+    overflow: auto;
+}    
 </style>
  
+  
  
 </head>
 <body onload="getOrganisations();getClientName();">
@@ -125,7 +141,9 @@ color:#fff;background-color:#99ccff;
        </nav>
       
        <div class="container"  role="main" style="height:800px">
-      
+       <div id="spinner">
+    		<img src="ajax-loader.gif" alt="Loading..."/>
+		</div>
               <div  class="row ">
                            <div class="page-header">
                                   <p>&nbsp;</p>
@@ -175,6 +193,7 @@ color:#fff;background-color:#99ccff;
                                          <tr>
                                                 <td style="padding-right: 100px">
                                                        <canvas id="summaryCost" width="200px" height="400px"></canvas>
+                                                      
                                                 </td>
                                                 <td style="padding-right: 100px">
                                                 <div id="summaryCostLegend" class="baby-box"  style="width:200px"></div>
