@@ -76,8 +76,7 @@ public class ChargeBackController {
 		
 	}
 	private List<PriceValueSummary> getSummary(final String startDate, final String endDate) throws ParseException {
-		String url = INFRA_API;
-		url = url + "?" +"start=" + startDate + "&" + "end=" + endDate; 
+		final String url = INFRA_API +  "?" +"start=" + startDate + "&" + "end=" + endDate;
 		
 		final ResponseEntity<CostVO> infraApiResponse = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<CostVO>() {
@@ -132,8 +131,8 @@ public class ChargeBackController {
 	}
 
 	@RequestMapping(value = GET_COST_DETAILS, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	private ChartVO getSummaryVal(@PathVariable String infoType, @PathVariable String resourceType, 
-			@PathVariable final String startDate, @PathVariable final String endDate, HttpSession session)
+	public ChartVO getSummaryVal(@PathVariable final String infoType, @PathVariable final String resourceType, 
+			@PathVariable final String startDate, @PathVariable final String endDate,  HttpSession session)
 			throws ParseException {
 
 		if(null!=session && null!=session.getAttribute("dollarSplit" + startDate + endDate +infoType + resourceType)){
@@ -143,15 +142,15 @@ public class ChargeBackController {
 		ChartVO chartVO = null;
 		DecimalFormat decimalFormat = new DecimalFormat("#.##");
 		final List<PriceValueSummary> priceValueSummaryList = getSummary(startDate,endDate);
-		Function<List<PriceValueSummary>, List<String>> summaryfunction = getSummaryFunction(priceValueSummaryList);
-		Function<List<PriceValueSummary>, List<String>> diskfunction= getDiskFunction(priceValueSummaryList);;
-		Function<List<PriceValueSummary>, List<String>> cpufunction= getCPUFunction(priceValueSummaryList);
-		Function<List<PriceValueSummary>, List<String>> memoryfunction = getMemoryFunction(priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>> summaryfunction = getSummaryFunction(priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>> diskfunction= getDiskFunction(priceValueSummaryList);;
+		final Function<List<PriceValueSummary>, List<String>> cpufunction= getCPUFunction(priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>> memoryfunction = getMemoryFunction(priceValueSummaryList);
 
-		Function<List<PriceValueSummary>, List<String>>  summaryLabel = getSummaryLabelFunction(decimalFormat, priceValueSummaryList);
-		Function<List<PriceValueSummary>, List<String>> memoryLabel = getMemoryLabelFunction(decimalFormat, priceValueSummaryList);;
-		Function<List<PriceValueSummary>, List<String>> cpuLabel = getCPULabelFunction(decimalFormat, priceValueSummaryList);
-		Function<List<PriceValueSummary>, List<String>> diskLabel = getDiskLabelFunction(decimalFormat, priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>>  summaryLabel = getSummaryLabelFunction(decimalFormat, priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>> memoryLabel = getMemoryLabelFunction(decimalFormat, priceValueSummaryList);;
+		final Function<List<PriceValueSummary>, List<String>> cpuLabel = getCPULabelFunction(decimalFormat, priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>> diskLabel = getDiskLabelFunction(decimalFormat, priceValueSummaryList);
 
 		if (resourceType.equals(SUMMARY)) {
 			chartVO = getParameterizedUsageDetails(priceValueSummaryList, summaryfunction, summaryLabel);
@@ -172,7 +171,7 @@ public class ChargeBackController {
 		return chartVO;
 
 	}
-	private Function<List<PriceValueSummary>, List<String>> getDiskLabelFunction(DecimalFormat decimalFormat,
+	private Function<List<PriceValueSummary>, List<String>> getDiskLabelFunction(final DecimalFormat decimalFormat,
 			final List<PriceValueSummary> priceValueSummaryList) {
 		return appLabel -> priceValueSummaryList.stream().map(
 				usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.disk)))
@@ -183,7 +182,7 @@ public class ChargeBackController {
 		return usedCPU -> priceValueSummaryList.stream()
 				.map(usageRecord -> String.valueOf(usageRecord.disk)).collect(Collectors.toList());
 	}
-	private Function<List<PriceValueSummary>, List<String>> getCPULabelFunction(DecimalFormat decimalFormat,
+	private Function<List<PriceValueSummary>, List<String>> getCPULabelFunction(final DecimalFormat decimalFormat,
 			final List<PriceValueSummary> priceValueSummaryList) {
 		return appLabel -> priceValueSummaryList.stream().map(
 				usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.cpu)))
@@ -194,7 +193,7 @@ public class ChargeBackController {
 		return usedCPU -> priceValueSummaryList.stream()
 				.map(usageRecord -> String.valueOf(usageRecord.cpu)).collect(Collectors.toList());
 	}
-	private Function<List<PriceValueSummary>, List<String>> getMemoryLabelFunction(DecimalFormat decimalFormat,
+	private Function<List<PriceValueSummary>, List<String>> getMemoryLabelFunction(final DecimalFormat decimalFormat,
 			final List<PriceValueSummary> priceValueSummaryList) {
 		return appLabel -> priceValueSummaryList.stream().map(
 				usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.memory)))
@@ -205,7 +204,7 @@ public class ChargeBackController {
 		return usedMemory -> priceValueSummaryList.stream()
 				.map(usageRecord -> String.valueOf(usageRecord.memory)).collect(Collectors.toList());
 	}
-	private Function<List<PriceValueSummary>, List<String>> getSummaryLabelFunction(DecimalFormat decimalFormat,
+	private Function<List<PriceValueSummary>, List<String>> getSummaryLabelFunction(final DecimalFormat decimalFormat,
 			final List<PriceValueSummary> priceValueSummaryList) {
 		return appLabel -> priceValueSummaryList.stream().map(usageRecord -> usageRecord.orgName
 				.concat(" $").concat(decimalFormat.format(usageRecord.summary))).collect(Collectors.toList());
@@ -289,7 +288,7 @@ public class ChargeBackController {
 	}
 
 	@RequestMapping(value = GET_SPACE_LIST, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<String> getSpaceList(@PathVariable String orgName) throws UnsupportedEncodingException {
+	public List<String> getSpaceList(@PathVariable final String orgName) throws UnsupportedEncodingException {
 		
 		final ResponseEntity<List<String>> response = restTemplate.exchange(SPACELIST_URL + "/" + orgName , HttpMethod.GET, HttpEntity.EMPTY,
 				new ParameterizedTypeReference<List<String>>() {
@@ -301,8 +300,8 @@ public class ChargeBackController {
 
 	private ChartVO getUnUsedResource(final List<UsageRecord> response,
 			final String freeResourceVal,
-			Function<List<UsageRecord>, List<String>> freeResourceFunction,
-			Function<List<UsageRecord>, List<String>> appLabelFunction) {
+			final Function<List<UsageRecord>, List<String>> freeResourceFunction,
+			final Function<List<UsageRecord>, List<String>> appLabelFunction) {
 		final List<String> freeResource = freeResourceFunction.apply(response);
 		final List<String> appLabel = appLabelFunction.apply(response);
 		freeResource.add(freeResourceVal);
