@@ -12,6 +12,7 @@ import static com.chargeback.constants.ChargeBackConstants.UNUSED;
 import static com.chargeback.constants.ChargeBackConstants.UNUTILISED;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -22,24 +23,22 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
+import com.chargeback.rest.client.ChargeBackApiClient;
+import com.chargeback.rest.client.InfraApiClient;
 import com.chargeback.vo.ChartVO;
 import com.chargeback.vo.CostVO;
 import com.chargeback.vo.PriceValueSummary;
 import com.chargeback.vo.UsageRecord;
+
 /**
  * This Controller gives the Chart Data after calling the metrics service to the
  * UI.
@@ -50,53 +49,27 @@ import com.chargeback.vo.UsageRecord;
 @RestController
 public class ChargeBackController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ChargeBackController.class);
+	private Log log = LogFactory.getLog(ChargeBackController.class);
 
-	/*@Autowired
+	@Autowired
 	private InfraApiClient infraApiClient;
-	
+
 	@Autowired
 	private ChargeBackApiClient chargeBackApiClient;
-	*/
-	private static final String INSTANCE_METRICS_URL = "http://chargeback-api.cglean.com/metrics/getInstanceMetrics";
-	private static final String FREERESOURRCE_URL = "http://chargeback-api.cglean.com/metrics/getFreeResource";
-	
-	private static final String ORG_LIST_URL = "http://chargeback-api.cglean.com/metrics/getOrgList";
-	private static final String SPACELIST_URL = "http://chargeback-api.cglean.com/metrics/getSpaceList";
-	private static final String INFRA_API="http://infrastructure-api.cglean.com/cost";
 
-
-	@Autowired  private RestTemplate restTemplate; 
-	
-	
-	
-	@RequestMapping(value="/getClient", method=RequestMethod.GET, produces=MediaType.TEXT_PLAIN_VALUE)
-	public String getClientName(){
+	@RequestMapping(value = "/getClient", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+	public String getClientName() {
 		return System.getenv("CLIENT_LOGO");
-		
+
 	}
+
 	private List<PriceValueSummary> getSummary(final String startDate, final String endDate) throws ParseException {
-		final String url = INFRA_API +  "?" +"start=" + startDate + "&" + "end=" + endDate;
-		
-		final ResponseEntity<CostVO> infraApiResponse = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY,
-				new ParameterizedTypeReference<CostVO>() {
-				});
-		final CostVO costVO = infraApiResponse.getBody();
-				//infraApiClient.getCost(startDate, endDate);
-		
-		final ResponseEntity<List<String>> response = restTemplate.exchange(ORG_LIST_URL, HttpMethod.GET, HttpEntity.EMPTY,
-				new ParameterizedTypeReference<List<String>>() {
-				});
-		
-		final ResponseEntity<List<UsageRecord>> instanceMetrics = restTemplate.exchange(INSTANCE_METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
-				new ParameterizedTypeReference<List<UsageRecord>>() {
-				});
-		final List<String> orgList = response.getBody();
-				//chargeBackApiClient.getOrgList();
+		log.info(String.format("GetSummary %s, %s", startDate, endDate));
+		final CostVO costVO = infraApiClient.getCost(startDate, endDate);
+		final List<String> orgList = chargeBackApiClient.getOrgList();
 
 		final List<PriceValueSummary> priceValueSummaryList = new ArrayList<>();
-		final List<UsageRecord> instanceData =  instanceMetrics.getBody();
-				//chargeBackApiClient.getAllApplicationInstanceData();
+		final List<UsageRecord> instanceData = chargeBackApiClient.getAllApplicationInstanceData();
 
 		final NumberFormat format = NumberFormat.getCurrencyInstance();
 
@@ -125,90 +98,112 @@ public class ChargeBackController {
 					.mapToDouble(usageRecord -> Double.valueOf(usageRecord.getDisk())).sum();
 			final double pctDiskUsed = (Double.valueOf(orgDiskSum) / Double.valueOf(allOrgsDiskSum));
 			final double amtForDisk = (format.parse(costVO.getDisk()).doubleValue()) * pctDiskUsed;
-			priceValueSummaryList.add(new PriceValueSummary(amtForDisk + amtForCPU + amtForMemory, amtForCPU, amtForDisk, amtForMemory, orgName));
+			priceValueSummaryList.add(new PriceValueSummary(amtForDisk + amtForCPU + amtForMemory, amtForCPU,
+					amtForDisk, amtForMemory, orgName));
 		}
 		return priceValueSummaryList;
 	}
 
 	@RequestMapping(value = GET_COST_DETAILS, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ChartVO getSummaryVal(@PathVariable final String infoType, @PathVariable final String resourceType, 
-			@PathVariable final String startDate, @PathVariable final String endDate,  HttpSession session)
-			throws ParseException {
-
-		if(null!=session && null!=session.getAttribute("dollarSplit" + startDate + endDate +infoType + resourceType)){
-			return ((ChartVO)session.getAttribute("dollarSplit" + startDate + endDate +infoType + resourceType));
+	public ChartVO getSummaryVal(@PathVariable final String infoType, @PathVariable final String resourceType,
+			@PathVariable final String startDate, @PathVariable final String endDate, HttpSession session)
+					throws ParseException {
+		log.info(String.format("GetCostDetails %s, %s", infoType, resourceType));
+		if (null != session
+				&& null != session.getAttribute("dollarSplit" + startDate + endDate + infoType + resourceType)) {
+			return ((ChartVO) session.getAttribute("dollarSplit" + startDate + endDate + infoType + resourceType));
 		}
-	
+
 		ChartVO chartVO = null;
 		DecimalFormat decimalFormat = new DecimalFormat("#.##");
-		final List<PriceValueSummary> priceValueSummaryList = getSummary(startDate,endDate);
-		final Function<List<PriceValueSummary>, List<String>> summaryfunction = getSummaryFunction(priceValueSummaryList);
-		final Function<List<PriceValueSummary>, List<String>> diskfunction= getDiskFunction(priceValueSummaryList);;
-		final Function<List<PriceValueSummary>, List<String>> cpufunction= getCPUFunction(priceValueSummaryList);
+		final List<PriceValueSummary> priceValueSummaryList = getSummary(startDate, endDate);
+		final Function<List<PriceValueSummary>, List<String>> summaryfunction = getSummaryFunction(
+				priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>> diskfunction = getDiskFunction(priceValueSummaryList);
+		;
+		final Function<List<PriceValueSummary>, List<String>> cpufunction = getCPUFunction(priceValueSummaryList);
 		final Function<List<PriceValueSummary>, List<String>> memoryfunction = getMemoryFunction(priceValueSummaryList);
 
-		final Function<List<PriceValueSummary>, List<String>>  summaryLabel = getSummaryLabelFunction(decimalFormat, priceValueSummaryList);
-		final Function<List<PriceValueSummary>, List<String>> memoryLabel = getMemoryLabelFunction(decimalFormat, priceValueSummaryList);;
-		final Function<List<PriceValueSummary>, List<String>> cpuLabel = getCPULabelFunction(decimalFormat, priceValueSummaryList);
-		final Function<List<PriceValueSummary>, List<String>> diskLabel = getDiskLabelFunction(decimalFormat, priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>> summaryLabel = getSummaryLabelFunction(decimalFormat,
+				priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>> memoryLabel = getMemoryLabelFunction(decimalFormat,
+				priceValueSummaryList);
+		;
+		final Function<List<PriceValueSummary>, List<String>> cpuLabel = getCPULabelFunction(decimalFormat,
+				priceValueSummaryList);
+		final Function<List<PriceValueSummary>, List<String>> diskLabel = getDiskLabelFunction(decimalFormat,
+				priceValueSummaryList);
 
 		if (resourceType.equals(SUMMARY)) {
 			chartVO = getParameterizedUsageDetails(priceValueSummaryList, summaryfunction, summaryLabel);
 		} else if (resourceType.equals(MEMORY)) {
 			chartVO = getParameterizedUsageDetails(priceValueSummaryList, memoryfunction, memoryLabel);
 		} else if (resourceType.equals(CPU)) {
-			chartVO=getParameterizedUsageDetails(priceValueSummaryList, cpufunction, cpuLabel);
+			chartVO = getParameterizedUsageDetails(priceValueSummaryList, cpufunction, cpuLabel);
 		} else if (resourceType.equals(DISK)) {
-			chartVO=getParameterizedUsageDetails(priceValueSummaryList, diskfunction, diskLabel);
+			chartVO = getParameterizedUsageDetails(priceValueSummaryList, diskfunction, diskLabel);
 		} else {
 			throw new RuntimeException("Please Select Resource Type from : CPU, DISK, MEM");
 		}
-		session.setAttribute("dollarSplit" + startDate + endDate + infoType + SUMMARY, getParameterizedUsageDetails(priceValueSummaryList, summaryfunction, summaryLabel));
-		session.setAttribute("dollarSplit" + startDate + endDate + infoType + MEMORY, getParameterizedUsageDetails(priceValueSummaryList, memoryfunction, memoryLabel));
-		session.setAttribute("dollarSplit" + startDate + endDate + infoType + CPU, getParameterizedUsageDetails(priceValueSummaryList, cpufunction, cpuLabel));
-		session.setAttribute("dollarSplit" + startDate + endDate + infoType + DISK, getParameterizedUsageDetails(priceValueSummaryList, diskfunction, diskLabel));
+		session.setAttribute("dollarSplit" + startDate + endDate + infoType + SUMMARY,
+				getParameterizedUsageDetails(priceValueSummaryList, summaryfunction, summaryLabel));
+		session.setAttribute("dollarSplit" + startDate + endDate + infoType + MEMORY,
+				getParameterizedUsageDetails(priceValueSummaryList, memoryfunction, memoryLabel));
+		session.setAttribute("dollarSplit" + startDate + endDate + infoType + CPU,
+				getParameterizedUsageDetails(priceValueSummaryList, cpufunction, cpuLabel));
+		session.setAttribute("dollarSplit" + startDate + endDate + infoType + DISK,
+				getParameterizedUsageDetails(priceValueSummaryList, diskfunction, diskLabel));
 
 		return chartVO;
 
 	}
+
 	private Function<List<PriceValueSummary>, List<String>> getDiskLabelFunction(final DecimalFormat decimalFormat,
 			final List<PriceValueSummary> priceValueSummaryList) {
-		return appLabel -> priceValueSummaryList.stream().map(
-				usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.disk)))
+		return appLabel -> priceValueSummaryList.stream()
+				.map(usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.disk)))
 				.collect(Collectors.toList());
 	}
+
 	private Function<List<PriceValueSummary>, List<String>> getDiskFunction(
 			final List<PriceValueSummary> priceValueSummaryList) {
-		return usedCPU -> priceValueSummaryList.stream()
-				.map(usageRecord -> String.valueOf(usageRecord.disk)).collect(Collectors.toList());
+		return usedCPU -> priceValueSummaryList.stream().map(usageRecord -> String.valueOf(usageRecord.disk))
+				.collect(Collectors.toList());
 	}
+
 	private Function<List<PriceValueSummary>, List<String>> getCPULabelFunction(final DecimalFormat decimalFormat,
 			final List<PriceValueSummary> priceValueSummaryList) {
-		return appLabel -> priceValueSummaryList.stream().map(
-				usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.cpu)))
+		return appLabel -> priceValueSummaryList.stream()
+				.map(usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.cpu)))
 				.collect(Collectors.toList());
 	}
+
 	private Function<List<PriceValueSummary>, List<String>> getCPUFunction(
 			final List<PriceValueSummary> priceValueSummaryList) {
-		return usedCPU -> priceValueSummaryList.stream()
-				.map(usageRecord -> String.valueOf(usageRecord.cpu)).collect(Collectors.toList());
-	}
-	private Function<List<PriceValueSummary>, List<String>> getMemoryLabelFunction(final DecimalFormat decimalFormat,
-			final List<PriceValueSummary> priceValueSummaryList) {
-		return appLabel -> priceValueSummaryList.stream().map(
-				usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.memory)))
+		return usedCPU -> priceValueSummaryList.stream().map(usageRecord -> String.valueOf(usageRecord.cpu))
 				.collect(Collectors.toList());
 	}
+
+	private Function<List<PriceValueSummary>, List<String>> getMemoryLabelFunction(final DecimalFormat decimalFormat,
+			final List<PriceValueSummary> priceValueSummaryList) {
+		return appLabel -> priceValueSummaryList.stream()
+				.map(usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.memory)))
+				.collect(Collectors.toList());
+	}
+
 	private Function<List<PriceValueSummary>, List<String>> getMemoryFunction(
 			final List<PriceValueSummary> priceValueSummaryList) {
-		return usedMemory -> priceValueSummaryList.stream()
-				.map(usageRecord -> String.valueOf(usageRecord.memory)).collect(Collectors.toList());
+		return usedMemory -> priceValueSummaryList.stream().map(usageRecord -> String.valueOf(usageRecord.memory))
+				.collect(Collectors.toList());
 	}
+
 	private Function<List<PriceValueSummary>, List<String>> getSummaryLabelFunction(final DecimalFormat decimalFormat,
 			final List<PriceValueSummary> priceValueSummaryList) {
-		return appLabel -> priceValueSummaryList.stream().map(usageRecord -> usageRecord.orgName
-				.concat(" $").concat(decimalFormat.format(usageRecord.summary))).collect(Collectors.toList());
+		return appLabel -> priceValueSummaryList.stream()
+				.map(usageRecord -> usageRecord.orgName.concat(" $").concat(decimalFormat.format(usageRecord.summary)))
+				.collect(Collectors.toList());
 	}
+
 	private Function<List<PriceValueSummary>, List<String>> getSummaryFunction(
 			final List<PriceValueSummary> priceValueSummaryList) {
 		Function<List<PriceValueSummary>, List<String>> summaryfunction;
@@ -228,13 +223,8 @@ public class ChargeBackController {
 	@RequestMapping(value = GET_USAGE_DETAILS, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ChartVO getResourceUsage(@PathVariable final String usageType, @PathVariable final String resourceType,
 			@PathVariable final String orgName, @PathVariable final String space) {
-		final ResponseEntity<List<UsageRecord>> response = restTemplate.exchange(INSTANCE_METRICS_URL, HttpMethod.GET, HttpEntity.EMPTY,
-				new ParameterizedTypeReference<List<UsageRecord>>() {
-				});
-		
-		final List<UsageRecord> instanceData =  response.getBody();
-		//chargeBackApiClient.getAllApplicationInstanceData();
-
+		log.info(String.format("getResourceDetails %s, %s, %s, %s", usageType, resourceType, orgName, space));
+		final List<UsageRecord> instanceData = chargeBackApiClient.getAllApplicationInstanceData();
 		Function<List<UsageRecord>, List<String>> usedResourceFunction = null;
 		Function<List<UsageRecord>, List<String>> appLabelFunction = null;
 		if (resourceType.equals(MEMORY)) {
@@ -258,18 +248,16 @@ public class ChargeBackController {
 			throw new RuntimeException("Please Select Resource Type from : CPU, DISK, MEM");
 		}
 
-		appLabelFunction = appLabel -> instanceData.stream().filter(
-				usageRecord -> (usageRecord.getOrgName().equals(orgName) && usageRecord.getSpaceName().equals(space)))
+		appLabelFunction = appLabel -> instanceData.stream()
+				.filter(usageRecord -> (usageRecord.getOrgName().equals(orgName)
+						&& usageRecord.getSpaceName().equals(space)))
 				.map(usageRecord -> usageRecord.getAppname().concat(" - ").concat(usageRecord.getInstanceIndex()))
 				.collect(Collectors.toList());
 
 		if (usageType.equals(UNUSED)) {
 			if (!resourceType.equals(DISK)) {
-				//final String freeResource = chargeBackApiClient.getFreeResourceForResourceType(resourceType);
-				final ResponseEntity<String> freeResourceResponse = restTemplate.exchange(FREERESOURRCE_URL + "/" + resourceType, HttpMethod.GET, HttpEntity.EMPTY,
-						new ParameterizedTypeReference<String>() {
-						});
-				return getUnUsedResource(instanceData, freeResourceResponse.getBody(), usedResourceFunction, appLabelFunction);
+				return getUnUsedResource(instanceData, chargeBackApiClient.getFreeResourceForResourceType(resourceType),
+						usedResourceFunction, appLabelFunction);
 			} else {
 				throw new RuntimeException("Not able to get total disk usage as of now");
 			}
@@ -279,34 +267,24 @@ public class ChargeBackController {
 
 	@RequestMapping(value = GET_ORG_LIST, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> getOrganizationNames() {
-		
-		final ResponseEntity<List<String>> response = restTemplate.exchange(ORG_LIST_URL, HttpMethod.GET, HttpEntity.EMPTY,
-				new ParameterizedTypeReference<List<String>>() {
-				});
-		return response.getBody();
-		//return chargeBackApiClient.getOrgList();
+		log.info(String.format("getOrgList"));
+		return chargeBackApiClient.getOrgList();
 	}
 
 	@RequestMapping(value = GET_SPACE_LIST, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> getSpaceList(@PathVariable final String orgName) throws UnsupportedEncodingException {
-		
-		final ResponseEntity<List<String>> response = restTemplate.exchange(SPACELIST_URL + "/" + orgName , HttpMethod.GET, HttpEntity.EMPTY,
-				new ParameterizedTypeReference<List<String>>() {
-				});
-		return response.getBody();
-		
-		//return chargeBackApiClient.getSpaceList(URLEncoder.encode(orgName, "UTF-8"));
+		log.info(String.format("getSpaceList, %s", orgName));		
+		return chargeBackApiClient.getSpaceList(URLEncoder.encode(orgName, "UTF-8"));
 	}
 
-	private ChartVO getUnUsedResource(final List<UsageRecord> response,
-			final String freeResourceVal,
+	private ChartVO getUnUsedResource(final List<UsageRecord> response, final String freeResourceVal,
 			final Function<List<UsageRecord>, List<String>> freeResourceFunction,
 			final Function<List<UsageRecord>, List<String>> appLabelFunction) {
 		final List<String> freeResource = freeResourceFunction.apply(response);
 		final List<String> appLabel = appLabelFunction.apply(response);
 		freeResource.add(freeResourceVal);
 		appLabel.add(UNUTILISED);
-		return new ChartVO(appLabel,freeResource);
+		return new ChartVO(appLabel, freeResource);
 	}
 
 	private ChartVO getUsageDetails(final List<UsageRecord> response,
@@ -315,7 +293,7 @@ public class ChargeBackController {
 
 		final List<String> resourceUsed = resourceUsedFunction.apply(response);
 		final List<String> appLabel = appLabelFunction.apply(response);
-		return new ChartVO(appLabel,resourceUsed);
+		return new ChartVO(appLabel, resourceUsed);
 	}
 
 	private ChartVO getParameterizedUsageDetails(final List<PriceValueSummary> summaryList,
@@ -324,6 +302,6 @@ public class ChargeBackController {
 
 		final List<String> resourceUsed = resourceUsedFunction.apply(summaryList);
 		final List<String> appLabel = appLabelFunction.apply(summaryList);
-		return  new ChartVO(appLabel, resourceUsed);
+		return new ChartVO(appLabel, resourceUsed);
 	}
 }

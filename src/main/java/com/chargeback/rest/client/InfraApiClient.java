@@ -10,7 +10,6 @@ import com.chargeback.vo.CostVO;
 @FeignClient("INFRASTRUCTURE-API")
 public interface InfraApiClient {
 
-	
 	@RequestMapping(value = "/cost", method = RequestMethod.GET)
 	public CostVO getCost(@RequestParam("start") String start, @RequestParam("end") String end);
 }

@@ -1,10 +1,10 @@
 ---
 applications:
-- name: chargebackMicroM
+- name: chargeback-ui
   memory: 1024M
   random-route: true
-  host: chargeback-micro-new
-  path: target/chargeback-0.0.1-SNAPSHOT.jar
+  host: chargeback-ui
+  path: target/chargeback-ui-0.0.1-SNAPSHOT.jar
   services:
     - service-registry
   env:

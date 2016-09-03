@@ -1,5 +1,7 @@
 package com.chargeback.controller;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 /**
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 public class ChargeBackViewController {
+	private Log log = LogFactory.getLog(ChargeBackViewController.class);
 
 	/**
 	 * This method returns the main HTML page containing the chargeback details
@@ -16,6 +19,7 @@ public class ChargeBackViewController {
 	 */
 	@RequestMapping("/")
 	public String viewUsageDetails() {
+		log.info("Returning charge.html");
 		// TODO:: Add suffix in application.properties file so that .html need not be added 
 	    // Move the constants to Constant file 
 		return "charge.html";
