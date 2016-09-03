@@ -13,3 +13,9 @@ hystrix:
       execution:
         timeout:
           enabled: false
+
+
+management:
+  security:
+    enabled: false
+          

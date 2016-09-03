@@ -9,3 +9,4 @@ applications:
     - service-registry
   env:
     SPRING_PROFILES_ACTIVE: cloud
+    CF_TARGET: https://api.cglean.com
