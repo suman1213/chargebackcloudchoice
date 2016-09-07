@@ -457,7 +457,7 @@ var getClientName = function(){
 	$.ajax({
 		url : "getClient",
 		success : function(data) {
-			console.log(" Org List::" + data);
+			console.log("Client Name::" + data);
 			if(data=='Kroger'){
 				document.getElementById("clientImg").src="Kroger.png";
 			}else{

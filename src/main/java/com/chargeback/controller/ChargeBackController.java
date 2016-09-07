@@ -26,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,10 +57,15 @@ public class ChargeBackController {
 
 	@Autowired
 	private ChargeBackApiClient chargeBackApiClient;
+	
+
+	@Value("${client.name:NBCU}")
+	private String clientName;
+	
 
 	@RequestMapping(value = "/getClient", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	public String getClientName() {
-		return System.getenv("CLIENT_LOGO");
+		return clientName;
 
 	}
 

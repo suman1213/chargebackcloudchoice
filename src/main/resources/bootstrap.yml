@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: chargeback-ui
+---
+spring:
+  cloud:
+    config:
+      env: default
+---
+spring:
+  cloud:
+    config:
+      label: master
+
+---
+
+spring:
+  cloud:
+    config:
+      uri: ${vcap.services.config-server.credentials.uri:http://localhost:8001}      
+      
