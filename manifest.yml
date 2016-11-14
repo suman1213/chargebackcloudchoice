@@ -1,9 +1,9 @@
 ---
 applications:
-- name: chargeback-ui
+- name: chargeback-ui-cloud-choice
   memory: 1024M
   random-route: true
-  host: chargeback-ui
+  host: chargeback-ui-cloud-choice
   path: target/chargeback-ui-0.0.1-SNAPSHOT.jar
   services:
     - service-registry

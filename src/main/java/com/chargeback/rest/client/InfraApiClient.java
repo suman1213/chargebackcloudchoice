@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.chargeback.vo.CostVO;
 
-@FeignClient("INFRASTRUCTURE-API")
+@FeignClient(name="INFRASTRUCTURE-API",url="http://infrastructure-api.cglean.com/")
 public interface InfraApiClient {
 
 	@RequestMapping(value = "/cost", method = RequestMethod.GET)

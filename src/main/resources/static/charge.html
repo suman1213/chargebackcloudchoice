@@ -32,6 +32,13 @@
 .parentTab{
  
 }
+
+.container1 {
+	padding-right: 0px; 
+     padding-left: 0px; 
+     margin-right: 0px; 
+     margin-left: 0px
+}
  
 .resourceTab{
 }
@@ -93,7 +100,11 @@ color:#fff;background-color:#99ccff;
 }
  
 .img_aligment{
-       float:right;
+       float:left;
+}
+
+.baner.aligment{
+	float
 }
 
  div#spinner
@@ -124,23 +135,23 @@ color:#fff;background-color:#99ccff;
   
  
 </head>
-<body onload="getOrganisations();getClientName();periodChange();">
+<body onload="getOrganisations();periodChange();">
        <nav class="navbar navbar-inverse navbar-fixed-top"  role="navigation">
-              <div class="container" >
+              <div class="container" style="padding-right: 0px; padding-left: 0px; margin-right: 0px;margin-left: 0px" >
                      <!-- Brand and toggle get grouped for better mobile display -->
                      <div class="img_aligment">
-                           <img  id="clientImg" src="" style="width: 200px; height: 70px;" />
-                           <img id="capImg" align="right" src="partner-capgemini.jpg" style="width: 200px; height: 70px;" />
+                           <img id="capImg" align="left" src="cap_cloud_logo.png" style="width: 200px; height: 70px;" />
                      </div>
                     
+                  <div style="align:center">
                     
-                    
-                     <div class="navbar-header" >
-                     <font color="white" size="6px">Chargeback User Interface</font>
+                     <div class="navbar-header" style="float: none;margin-left: 50%;">
+                  <font color="white" size="6px">Chargeback User Interface</font>
                     
                     
                           
                      </div>
+                  </div>   
                      <!-- <div class="collapse navbar-collapse" id="chargeLink">
                            <ul class="nav navbar-nav" style="padding-right: 60px;">
                                   <li  ><a href="charge.html"><font color="white"> Utilization by Application</font></a></li>
